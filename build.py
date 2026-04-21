@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""
+build.py — 将 README.md 中的手册列表转换为精美的入口页 index.html
+设计规范参考 design.md（Vercel 风格）
+"""
+
+import re
+import os
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+README_PATH = os.path.join(SCRIPT_DIR, "README.md")
+DESIGN_PATH = os.path.join(SCRIPT_DIR, "design.md")
+OUTPUT_PATH = os.path.join(SCRIPT_DIR, "index.html")
+
+
+def parse_readme(path):
+    """从 README.md 解析手册列表"""
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # 找到表格部分（## 📚 手册列表 之后的 markdown table）
+    table_match = re.search(
+        r"## 📚 手册列表\s*\n\|.*?\n\|.*?\n([\s\S]*?)(?=\n##|\n$|$)", content
+    )
+    if not table_match:
+        return []
+
+    rows = []
+    for line in table_match.group(1).strip().split("\n"):
+        line = line.strip()
+        if not line.startswith("|"):
+            continue
+        cells = [c.strip() for c in line.split("|")[1:-1]]
+        if len(cells) >= 4:
+            # cells: [标题, 简介, 标签, 路径]
+            title_cell = cells[0]
+            # Extract title text and URL from markdown link
+            link_match = re.match(r"\[(.*?)\]\((.*?)\)", title_cell)
+            if link_match:
+                title = link_match.group(1)
+                url = link_match.group(2)
+            else:
+                title = title_cell
+                url = cells[3].strip().rstrip("/")
+
+            rows.append(
+                {
+                    "title": title,
+                    "url": url,
+                    "desc": cells[1].strip(),
+                    "tag": cells[2].strip(),
+                    "slug": cells[3].strip().rstrip("/"),
+                }
+            )
+    return rows
+
+
+def build_html(pages):
+    """生成入口页 HTML（Vercel 风格）"""
+    cards_html = ""
+    for i, page in enumerate(pages):
+        delay = i * 0.05
+        cards_html += f"""
+        <a href="{page['url']}" class="card" style="animation-delay:{delay}s">
+          <span class="card-tag">{page['tag']}</span>
+          <h3 class="card-title">{page['title']}</h3>
+          <p class="card-desc">{page['desc']}</p>
+          <span class="card-link">访问 →</span>
+        </a>"""
+
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Crafted</title>
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+body{{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:#000;color:#ededed;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:0 24px;
+}}
+.container{{max-width:1000px;width:100%;margin:0 auto}}
+
+/* Hero */
+.hero{{padding:120px 0 80px;text-align:center}}
+.hero-label{{
+  display:inline-block;font-size:12px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.1em;
+  color:#888;margin-bottom:20px;
+  padding:6px 16px;border:1px solid #1a1a1a;border-radius:20px;
+}}
+.hero h1{{
+  font-size:clamp(36px,6vw,56px);font-weight:800;
+  letter-spacing:-.03em;line-height:1.1;
+  background:linear-gradient(135deg,#007CF0,#00DFD8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:16px;
+}}
+.hero p{{
+  font-size:clamp(16px,2.5vw,20px);color:#666;
+  font-weight:400;max-width:480px;margin:0 auto;
+}}
+
+/* Grid */
+.grid{{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:16px;padding-bottom:120px;
+}}
+
+/* Card */
+.card{{
+  display:block;background:#0a0a0a;border:1px solid #1a1a1a;
+  border-radius:12px;padding:28px 24px;
+  text-decoration:none;color:inherit;
+  transition:all .25s ease;
+  animation:fadeInUp .5s ease both;
+  position:relative;overflow:hidden;
+}}
+.card::before{{
+  content:'';position:absolute;inset:0;
+  border-radius:12px;padding:1px;
+  background:linear-gradient(135deg,#007CF0,#00DFD8,#7928CA,#007CF0);
+  background-size:300% 300%;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .3s ease;
+}}
+.card:hover{{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,124,240,.08);
+}}
+.card:hover::before{{
+  opacity:1;animation:gradient-shift 3s ease infinite;
+}}
+.card-tag{{
+  font-size:12px;font-weight:500;letter-spacing:.05em;
+  color:#00DFD8;display:block;margin-bottom:16px;
+}}
+.card-title{{
+  font-size:18px;font-weight:600;color:#ededed;
+  margin-bottom:8px;line-height:1.4;
+}}
+.card-desc{{
+  font-size:14px;color:#666;line-height:1.6;
+  margin-bottom:20px;
+}}
+.card-link{{
+  font-size:13px;font-weight:500;
+  background:linear-gradient(135deg,#007CF0,#00DFD8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}}
+
+/* Footer */
+.footer{{
+  text-align:center;padding:40px 0 60px;
+  border-top:1px solid #111;width:100%;
+}}
+.footer p{{
+  font-size:13px;color:#444;line-height:1.8;
+}}
+
+/* Empty state */
+.empty{{
+  text-align:center;padding:80px 20px;color:#444;
+  font-size:16px;
+}}
+
+/* Animations */
+@keyframes fadeInUp{{
+  from{{opacity:0;transform:translateY(20px)}}
+  to{{opacity:1;transform:translateY(0)}}
+}}
+@keyframes gradient-shift{{
+  0%{{background-position:0% 50%}}
+  50%{{background-position:100% 50%}}
+  100%{{background-position:0% 50%}}
+}}
+
+@media(max-width:640px){{
+  .hero{{padding:80px 0 48px}}
+  .grid{{gap:12px;padding-bottom:80px}}
+  .card{{padding:20px}}
+}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hero">
+    <span class="hero-label">AI-Powered Learning</span>
+    <h1>Agent Crafted</h1>
+    <p>Pages crafted by AI agents through conversations</p>
+  </div>
+
+  <div class="grid">
+    {cards_html if pages else '<div class="empty">还没有手册，敬请期待…</div>'}
+  </div>
+
+  <div class="footer">
+    <p>Built with ♥ by AI agents</p>
+    <p>Powered by GitHub Pages</p>
+  </div>
+</div>
+</body>
+</html>"""
+
+
+def main():
+    pages = parse_readme(README_PATH)
+    html = build_html(pages)
+
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        f.write(html)
+
+    print(f"✅ Built index.html with {len(pages)} page(s)")
+
+
+if __name__ == "__main__":
+    main()

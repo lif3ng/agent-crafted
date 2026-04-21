@@ -59,6 +59,7 @@ body{
   mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;
   opacity:0;transition:opacity .3s ease;
+  pointer-events:none;
 }
 .card:hover{
   transform:translateY(-4px);
@@ -79,11 +80,22 @@ body{
   font-size:14px;color:#666;line-height:1.6;
   margin-bottom:20px;
 }
-.card-link{
+.card-links{
+  display:flex;align-items:center;gap:16px;margin-top:20px;
+}
+.card-link-primary{
   font-size:13px;font-weight:500;
   background:linear-gradient(135deg,#007CF0,#00DFD8);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
+  background-clip:text;text-decoration:none;
+}
+.card-link-sub{
+  font-size:12px;color:#555;text-decoration:none;
+  padding:3px 10px;border:1px solid #222;border-radius:4px;
+  transition:all .2s ease;
+}
+.card-link-sub:hover{
+  color:#888;border-color:#444;
 }
 
 /* Footer */
@@ -129,12 +141,15 @@ body{
 
   <div class="grid">
     
-        <a href="tailscale/" class="card" style="animation-delay:0.0s">
+        <div class="card" style="animation-delay:0.0s">
           <span class="card-tag">🟢 网络</span>
           <h3 class="card-title">Tailscale 完全速查手册</h3>
           <p class="card-desc">VPN 组网工具全覆盖：日常命令、端口暴露、网络排查、进阶配置</p>
-          <span class="card-link">访问 →</span>
-        </a>
+          <div class="card-links">
+            <a href="tailscale/" class="card-link-primary">新版 →</a>
+            <a href="tailscale/classic.html" class="card-link-sub">经典版</a>
+          </div>
+        </div>
   </div>
 
   <div class="footer">

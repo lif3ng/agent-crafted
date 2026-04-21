@@ -3,115 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tailscale 完全速查手册</title>
+<title>Tailscale 完全速查手册 — Agent Crafted</title>
 <style>
-:root{--bg:#0f1117;--sf:#1a1d27;--sf2:#242836;--bd:#2e3347;--tx:#e4e7f1;--dim:#8b90a5;--ac:#6c5ce7;--acl:#a29bfe;--gn:#00cec9;--rd:#ff6b6b;--og:#feca57;--bl:#54a0ff;--pk:#fd79a8}
+:root{--bg:#000;--sf:#0a0a0a;--sf2:#111;--bd:#1a1a1a;--tx:#ededed;--dim:#888;--dim2:#555;--ac:#007CF0;--ac2:#00DFD8;--gn:#00b894;--rd:#ff6b6b;--og:#feca57;--bl:#54a0ff;--pk:#fd79a8}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC',sans-serif;background:var(--bg);color:var(--tx);line-height:1.7;padding:2rem;max-width:1060px;margin:0 auto}
-.hero{text-align:center;padding:2.5rem 2rem;background:linear-gradient(135deg,var(--sf),var(--sf2));border-radius:16px;margin-bottom:2rem;border:1px solid var(--bd)}
-.hero h1{font-size:2rem;font-weight:800;background:linear-gradient(135deg,#a29bfe,#6c5ce7,#00cec9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{color:var(--dim);margin-top:.4rem}
-.tier{margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem}
-.tier-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .8rem;border-radius:20px;font-size:.82rem;font-weight:700}
-.tier-1{background:rgba(0,206,201,.15);color:var(--gn);border:1px solid rgba(0,206,201,.3)}
-.tier-2{background:rgba(84,160,255,.15);color:var(--bl);border:1px solid rgba(84,160,255,.3)}
-.tier-3{background:rgba(162,155,254,.15);color:var(--acl);border:1px solid rgba(162,155,254,.3)}
-.sec{margin-bottom:2rem}
-.sec-t{font-size:1.2rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem;color:var(--acl)}
-.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:1.2rem;margin-bottom:.8rem}
-pre{background:#161922;border:1px solid var(--bd);border-radius:6px;padding:.8rem 1rem;overflow-x:auto;font-family:'JetBrains Mono','Fira Code',Menlo,monospace;font-size:.84rem;line-height:1.8;margin:.6rem 0}
-code{font-family:'JetBrains Mono',Menlo,monospace;font-size:.84rem}
-.in{background:var(--sf2);padding:.1rem .45rem;border-radius:4px;color:var(--gn);font-size:.82rem}
-.cm{color:#5c6370;font-style:italic}.c1{color:#e06c75}.c2{color:#d19a66}.c3{color:#61afef}.c4{color:#98c379}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-th{background:var(--sf2);padding:.6rem .8rem;text-align:left;font-weight:600;color:var(--acl);border-bottom:2px solid var(--ac);white-space:nowrap}
-td{padding:.6rem .8rem;border-bottom:1px solid var(--bd);vertical-align:top}
-tr:hover td{background:rgba(108,92,231,.05)}
-.tag{display:inline-block;padding:.1rem .5rem;border-radius:16px;font-size:.76rem;font-weight:600}
-.tg{background:rgba(0,206,201,.15);color:var(--gn)}.tr{background:rgba(255,107,107,.15);color:var(--rd)}.to{background:rgba(254,202,87,.15);color:var(--og)}.tb{background:rgba(84,160,255,.15);color:var(--bl)}
-.box{border-radius:8px;padding:.8rem 1rem;margin:.8rem 0;display:flex;gap:.6rem;align-items:flex-start}
-.bi{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
-.bt{background:rgba(0,206,201,.08);border:1px solid rgba(0,206,201,.25)}
-.bw{background:rgba(254,202,87,.08);border:1px solid rgba(254,202,87,.25)}
-.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin:.8rem 0}
-.vs-s{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:1rem}
-.vs-s h4{font-size:.9rem;margin-bottom:.4rem}
-.vs-d{display:flex;align-items:center;padding:0 .6rem;font-weight:800;color:var(--dim);font-size:1.1rem}
-.vs-s.ok{border-color:var(--gn)}.vs-s.ok h4{color:var(--gn)}
-.vs-s.no{border-color:var(--rd)}.vs-s.no h4{color:var(--rd)}
-.vs-s.warn{border-color:var(--og)}.vs-s.warn h4{color:var(--og)}
-.step{display:flex;gap:.8rem;margin-bottom:.8rem;align-items:flex-start}
-.sn{width:32px;height:32px;background:var(--ac);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-size:.85rem}
-.flow{display:flex;align-items:center;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:1rem 0;padding:.8rem}
-.fb{background:var(--sf2);border:1px solid var(--bd);border-radius:6px;padding:.4rem .8rem;font-size:.84rem;text-align:center;white-space:nowrap}
-.fa{color:var(--ac);font-size:1.1rem}
-.divider{border:0;border-top:2px dashed var(--bd);margin:2rem 0}
-@media(max-width:768px){body{padding:1rem}.vs{grid-template-columns:1fr}.vs-d{padding:.4rem}.hero h1{font-size:1.5rem}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,'PingFang SC','Noto Sans SC',sans-serif;background:var(--bg);color:var(--tx);line-height:1.7}
+.container{max-width:1000px;margin:0 auto;padding:0 24px}
+
+/* ===== HERO ===== */
+.hero{position:relative;overflow:hidden;padding:120px 0 80px;text-align:center}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(0,124,240,.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(0,223,216,.1) 0%,transparent 50%);pointer-events:none}
+.hero-label{display:inline-block;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.15em;color:var(--dim);padding:8px 20px;border:1px solid var(--bd);border-radius:30px;margin-bottom:24px;position:relative;z-index:1}
+.hero h1{font-size:clamp(40px,7vw,72px);font-weight:800;letter-spacing:-.04em;line-height:1.05;position:relative;z-index:1;margin-bottom:20px}
+.hero h1 span{background:linear-gradient(135deg,#007CF0,#00DFD8,#7928CA);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:clamp(16px,2.5vw,20px);color:var(--dim);max-width:520px;margin:0 auto;position:relative;z-index:1}
+.hero-stats{display:flex;justify-content:center;gap:40px;margin-top:48px;position:relative;z-index:1}
+.hero-stat{text-align:center}
+.hero-stat .num{font-size:32px;font-weight:700;background:linear-gradient(135deg,#007CF0,#00DFD8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-stat .label{font-size:12px;color:var(--dim2);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+/* ===== SECTIONS ===== */
+.section{padding:80px 0;border-top:1px solid var(--bd)}
+.section-header{margin-bottom:48px}
+.section-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;color:var(--dim2);margin-bottom:12px}
+.section-title{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.02em;margin-bottom:12px}
+.section-desc{color:var(--dim);font-size:16px;max-width:600px}
+
+/* ===== CARDS ===== */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:32px;margin-bottom:16px;transition:all .25s ease;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;border-radius:16px;padding:1px;background:linear-gradient(135deg,rgba(0,124,240,.3),rgba(0,223,216,.2),rgba(121,40,202,.3));background-size:300% 300%;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,124,240,.08)}
+.card:hover::before{opacity:1;animation:gradient-shift 4s ease infinite}
+@keyframes gradient-shift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.card-title{font-size:18px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card-icon{font-size:22px}
+
+/* ===== CODE ===== */
+pre{background:#050505;border:1px solid var(--bd);border-radius:12px;padding:20px 24px;overflow-x:auto;font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px;line-height:2;margin:16px 0;position:relative}
+pre::before{content:attr(data-lang);position:absolute;top:8px;right:16px;font-size:11px;color:var(--dim2);text-transform:uppercase;letter-spacing:.05em}
+.cm{color:#555;font-style:italic}.c1{color:#ff6b6b}.c2{color:#feca57}.c3{color:#54a0ff}.c4{color:#00b894}
+code{font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px}
+.in{background:rgba(0,124,240,.1);padding:2px 8px;border-radius:6px;color:#54a0ff;font-size:12px;font-weight:500}
+
+/* ===== TABLES ===== */
+table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
+th{background:var(--sf2);padding:12px 16px;text-align:left;font-weight:600;color:var(--tx);border-bottom:2px solid var(--bd);white-space:nowrap}
+td{padding:12px 16px;border-bottom:1px solid var(--bd);vertical-align:top}
+tr:hover td{background:rgba(0,124,240,.03)}
+
+/* ===== TAGS ===== */
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.tg{background:rgba(0,184,148,.12);color:var(--gn);border:1px solid rgba(0,184,148,.2)}
+.tr{background:rgba(255,107,107,.12);color:var(--rd);border:1px solid rgba(255,107,107,.2)}
+.to{background:rgba(254,202,87,.12);color:var(--og);border:1px solid rgba(254,202,87,.2)}
+.tb{background:rgba(84,160,255,.12);color:var(--bl);border:1px solid rgba(84,160,255,.2)}
+
+/* ===== VS COMPARE ===== */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:0;margin:16px 0}
+.vs-s{background:var(--sf2);border:1px solid var(--bd);border-radius:12px;padding:20px}
+.vs-s h4{font-size:14px;margin-bottom:8px;font-weight:600}
+.vs-d{display:flex;align-items:center;padding:0 16px;font-weight:800;color:var(--dim2);font-size:14px}
+.vs-s.ok{border-color:rgba(0,184,148,.3)}.vs-s.ok h4{color:var(--gn)}
+.vs-s.no{border-color:rgba(255,107,107,.3)}.vs-s.no h4{color:var(--rd)}
+.vs-s.warn{border-color:rgba(254,202,87,.3)}.vs-s.warn h4{color:var(--og)}
+
+/* ===== FLOW ===== */
+.flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:20px 0;padding:16px;background:var(--sf2);border-radius:12px;border:1px solid var(--bd)}
+.fb{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px 16px;font-size:13px;text-align:center;white-space:nowrap}
+.fa{color:var(--dim2);font-size:16px}
+
+/* ===== TIPS ===== */
+.tip{border-radius:12px;padding:16px 20px;margin:16px 0;display:flex;gap:12px;align-items:flex-start;background:rgba(0,124,240,.04);border:1px solid rgba(0,124,240,.15)}
+.tip-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.tip p{font-size:14px;color:var(--dim);line-height:1.7}
+
+/* ===== PRONUNCIATION ===== */
+.pron-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:16px}
+.pron-item{background:var(--sf2);border:1px solid var(--bd);border-radius:10px;padding:12px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .2s;user-select:none}
+.pron-item:hover{border-color:var(--ac);background:rgba(0,124,240,.06)}
+.pron-item .sound{font-size:18px;flex-shrink:0}
+.pron-item .info{flex:1;min-width:0}
+.pron-item .word{font-weight:600;font-size:14px}
+.pron-item .meta{font-size:12px;color:var(--dim2);margin-top:2px}
+
+/* ===== NAV ===== */
+.nav{position:sticky;top:0;z-index:100;background:rgba(0,0,0,.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--bd)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:56px;max-width:1000px;margin:0 auto;padding:0 24px}
+.nav-logo{font-size:14px;font-weight:700;letter-spacing:-.01em;background:linear-gradient(135deg,#007CF0,#00DFD8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:24px}
+.nav-links a{color:var(--dim);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--tx)}
+
+/* ===== FOOTER ===== */
+.footer{text-align:center;padding:60px 0;border-top:1px solid var(--bd);margin-top:40px}
+.footer p{font-size:13px;color:var(--dim2);line-height:2}
+.footer a{color:var(--dim);text-decoration:none;transition:color .2s}
+.footer a:hover{color:var(--ac2)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeInUp .6s ease both}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .hero{padding:80px 0 48px}
+  .hero-stats{gap:24px}
+  .hero-stat .num{font-size:24px}
+  .section{padding:48px 0}
+  .card{padding:20px}
+  .vs{grid-template-columns:1fr}.vs-d{padding:8px;text-align:center}
+  .nav-links{display:none}
+}
 </style>
 </head>
 <body>
 
+<!-- ===== NAV ===== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">Agent Crafted</div>
+    <div class="nav-links">
+      <a href="https://lif3ng.github.io/agent-crafted/">← 全部手册</a>
+      <a href="#commands">命令</a>
+      <a href="#faq">FAQ</a>
+      <a href="#pronunciation">发音</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
 <div class="hero">
-<div style="font-size:3rem">🌐</div>
-<h1>Tailscale 完全速查手册</h1>
-<p>按使用频率排列 · 前两个命令解决 80% 场景</p>
+  <div class="container">
+    <div class="hero-label">Network / VPN</div>
+    <h1><span>Tailscale</span><br>完全速查手册</h1>
+    <p>按使用频率排列 · 前两个命令解决 80% 场景<br>通过对话学习，由 AI Agent 精心打造</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">20+</div><div class="label">术语发音</div></div>
+      <div class="hero-stat"><div class="num">9</div><div class="label">核心章节</div></div>
+      <div class="hero-stat"><div class="num">15+</div><div class="label">FAQ 答疑</div></div>
+    </div>
+  </div>
 </div>
 
-<!-- ========== 频率说明 ========== -->
-<div class="box bt"><span class="bi">📖</span><p><b>阅读指南：</b>内容按使用频率从高到低排列。<span class="tag tg">日常必会</span> 是每天都会用到的，<span class="tag tb">经常使用</span> 是每周会用到的，<span class="tag" style="background:rgba(162,155,254,.15);color:var(--acl)">进阶功能</span> 需要时再查。时间紧就只学前两个 Section。</p></div>
+<div class="container">
+
+<!-- ===== READING GUIDE ===== -->
+<div class="tip">
+  <span class="tip-icon">📖</span>
+  <div>
+    <p><b>阅读指南：</b>内容按使用频率从高到低排列。<span class="tag tg">日常必会</span> 是每天都会用到的，<span class="tag tb">经常使用</span> 是每周会用到的，<span class="tag" style="background:rgba(121,40,202,.12);color:#a855f7;border:1px solid rgba(121,40,202,.2)">进阶功能</span> 需要时再查。时间紧就只学前两个 Section。</p>
+  </div>
+</div>
 
 <!-- ================================================================ -->
 <!--                    🟢 TIER 1：日常必会                           -->
 <!-- ================================================================ -->
-<div class="tier"><span class="tier-badge tier-1">🟢 日常必会 · 每天都用</span></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-tag">Tier 1 — Daily Use</div>
+    <div class="section-title">🟢 日常必会</div>
+    <div class="section-desc">每天都会用到的命令，掌握这两个 Section 就能处理 80% 的场景</div>
+  </div>
 
-<!-- Section: 连接 & 状态 -->
-<div class="sec">
-<div class="sec-t">1️⃣ 连接 &amp; 状态 — 最常用的两个命令</div>
-<div class="card">
-<pre><span class="cm"># 连接到 Tailnet（日常最常用，开机后执行一次）</span>
+  <!-- Section 1: 连接 & 状态 -->
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">1️⃣</span> 连接 & 状态 — 最常用的两个命令</div>
+    <pre data-lang="bash"><span class="cm"># 连接到 Tailnet（日常最常用，开机后执行一次）</span>
 <span class="c1">tailscale up</span>
 
 <span class="cm"># 查看所有设备状态（谁在线、IP 是多少）</span>
 <span class="c1">tailscale status</span></pre>
-<div class="box bt"><span class="bi">💡</span><p><b>status 输出：</b><code class="in">100.x.x.x</code> 是 Tailscale IP。<code class="in">idle</code> = 在线空闲，<code class="in">active</code> = 正在通信，<code class="in">-</code> = 离线。</p></div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p><b>status 输出解读：</b><code class="in">100.x.x.x</code> 是 Tailscale IP。<code class="in">idle</code> = 在线空闲，<code class="in">active</code> = 正在通信，<code class="in">-</code> = 离线。</p></div>
+    </div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">常用命令速查</h4>
-<table>
-<thead><tr><th>命令</th><th>作用</th><th>使用频率</th></tr></thead>
-<tbody>
-<tr><td><code class="in">tailscale up</code></td><td>连接网络</td><td>⭐⭐⭐ 每天</td></tr>
-<tr><td><code class="in">tailscale down</code></td><td>断开（不注销）</td><td>⭐⭐ 偶尔</td></tr>
-<tr><td><code class="in">tailscale status</code></td><td>查看设备列表 &amp; IP</td><td>⭐⭐⭐ 每天</td></tr>
-<tr><td><code class="in">tailscale ip [-4|-6]</code></td><td>查看本机 IP</td><td>⭐⭐⭐ 每天</td></tr>
-<tr><td><code class="in">tailscale ping &lt;device&gt;</code></td><td>测试连通性</td><td>⭐⭐ 常用</td></tr>
-<tr><td><code class="in">tailscale version</code></td><td>查看版本</td><td>⭐ 偶尔</td></tr>
-</tbody>
-</table>
-</div>
-</div>
+    <table>
+      <thead><tr><th>命令</th><th>作用</th><th>使用频率</th></tr></thead>
+      <tbody>
+        <tr><td><code class="in">tailscale up</code></td><td>连接网络</td><td>⭐⭐⭐ 每天</td></tr>
+        <tr><td><code class="in">tailscale down</code></td><td>断开（不注销）</td><td>⭐⭐ 偶尔</td></tr>
+        <tr><td><code class="in">tailscale status</code></td><td>查看设备列表 & IP</td><td>⭐⭐⭐ 每天</td></tr>
+        <tr><td><code class="in">tailscale ip [-4|-6]</code></td><td>查看本机 IP</td><td>⭐⭐⭐ 每天</td></tr>
+        <tr><td><code class="in">tailscale ping &lt;device&gt;</code></td><td>测试连通性</td><td>⭐⭐ 常用</td></tr>
+        <tr><td><code class="in">tailscale version</code></td><td>查看版本</td><td>⭐ 偶尔</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-<!-- Section: 端口暴露 -->
-<div class="sec">
-<div class="sec-t">2️⃣ Serve &amp; Funnel — 暴露端口</div>
+  <!-- Section 2: Serve & Funnel -->
+  <div id="commands" class="card fade-in">
+    <div class="card-title"><span class="card-icon">2️⃣</span> Serve & Funnel — 暴露端口</div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">核心区别（3 秒记住）</h4>
-<table>
-<thead><tr><th></th><th>直接 IP</th><th>Tailscale Serve</th><th>Tailscale Funnel</th></tr></thead>
-<tbody>
-<tr><td><b>谁能访问</b></td><td>Tailnet 内</td><td>Tailnet 内</td><td><span class="tag tr">整个互联网</span></td></tr>
-<tr><td><b>HTTPS</b></td><td>❌ 自己配</td><td><span class="tag tg">✅ 自动</span></td><td><span class="tag tg">✅ 自动</span></td></tr>
-<tr><td><b>多端口</b></td><td>全部天然可用</td><td>✅ 指定不同端口</td><td>⚠️ 仅 443/8443/10000</td></tr>
-</tbody>
-</table>
-</div>
+    <table>
+      <thead><tr><th></th><th>直接 IP</th><th>Tailscale Serve</th><th>Tailscale Funnel</th></tr></thead>
+      <tbody>
+        <tr><td><b>谁能访问</b></td><td>Tailnet 内</td><td>Tailnet 内</td><td><span class="tag tr">整个互联网</span></td></tr>
+        <tr><td><b>HTTPS</b></td><td>❌ 自己配</td><td><span class="tag tg">✅ 自动</span></td><td><span class="tag tg">✅ 自动</span></td></tr>
+        <tr><td><b>多端口</b></td><td>全部天然可用</td><td>✅ 指定不同端口</td><td>⚠️ 仅 443/8443/10000</td></tr>
+      </tbody>
+    </table>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">🔥 多端口暴露（你需要的就这个）</h4>
-<pre><span class="cm"># 暴露 3 个本地端口到 Tailnet（注意前端端口要不同！）</span>
+    <pre data-lang="bash"><span class="cm"># 暴露 3 个本地端口到 Tailnet（注意前端端口要不同！）</span>
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://127.0.0.1:3000
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https:8443 / http://127.0.0.1:8080
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https:9999 / http://127.0.0.1:5173
@@ -122,187 +216,175 @@ tr:hover td{background:rgba(108,92,231,.05)}
 <span class="cm"># 如需公网访问，再加 Funnel</span>
 <span class="c1">tailscale funnel</span> <span class="c2">--bg</span> https / http://127.0.0.1:3000
 <span class="c1">tailscale funnel</span> <span class="c2">--bg</span> https:8443 / http://127.0.0.1:8080</pre>
-</div>
+  </div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">📂 挂载点（Mount Point）— URL 路径路由</h4>
-<pre><span class="cm"># 命令结构：tailscale serve https &lt;挂载点&gt; &lt;后端地址&gt;</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">📂</span> 挂载点（Mount Point）— URL 路径路由</div>
+    <pre data-lang="bash"><span class="cm"># 命令结构：tailscale serve https &lt;挂载点&gt; &lt;后端地址&gt;</span>
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https <span class="c3">/</span>    http://127.0.0.1:3000   <span class="cm"># / = 根路径，匹配所有</span>
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https <span class="c3">/api</span>  http://127.0.0.1:8080   <span class="cm"># /api 路径 → API 服务</span>
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https <span class="c3">/docs</span> http://127.0.0.1:4000   <span class="cm"># /docs 路径 → 文档服务</span></pre>
-<div class="box bt"><span class="bi">💡</span><p>访问 <code class="in">https://machine.ts.net/api/users</code> → 转发到 <code class="in">127.0.0.1:8080/users</code>（路径会去掉 /api 前缀）</p></div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p>访问 <code class="in">https://machine.ts.net/api/users</code> → 转发到 <code class="in">127.0.0.1:8080/users</code>（路径会去掉 /api 前缀）</p></div>
+    </div>
+  </div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">🌐 后端不一定是本机 — 局域网地址也行</h4>
-<pre><span class="cm"># 后端可以是任何本机能访问到的地址</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">🌐</span> 后端不一定是本机 — 局域网地址也行</div>
+    <pre data-lang="bash"><span class="cm"># 后端可以是任何本机能访问到的地址</span>
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://<span class="c4">192.168.1.50</span>:3000    <span class="cm"># 局域网 NAS</span>
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://<span class="c4">172.17.0.2</span>:8080      <span class="cm"># Docker 容器</span>
 <span class="c1">tailscale funnel</span> <span class="c2">--bg</span> https / http://<span class="c4">192.168.1.88</span>:8123  <span class="cm"># Funnel + 局域网树莓派</span></pre>
-<div class="box bt"><span class="bi">💡</span><p>你的机器充当 <b>HTTPS 网关</b>：对外自动域名+证书，对内转发到任意可达地址（本机 / 局域网 / Docker）。唯一要求：运行 serve 的机器能访问到后端地址。</p></div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p>你的机器充当 <b>HTTPS 网关</b>：对外自动域名+证书，对内转发到任意可达地址（本机 / 局域网 / Docker）。唯一要求：运行 serve 的机器能访问到后端地址。</p></div>
+    </div>
+  </div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">⚡ 易混淆：叠加 VS 覆盖</h4>
-<div class="vs">
-<div class="vs-s ok">
-<h4>✅ 不同前端端口 → 叠加</h4>
-<pre><span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://...3000
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">⚡</span> 易混淆：叠加 VS 覆盖</div>
+    <div class="vs">
+      <div class="vs-s ok">
+        <h4>✅ 不同前端端口 → 叠加</h4>
+        <pre data-lang="bash"><span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://...3000
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https:8443 / http://...8080</pre>
-<p style="font-size:.82rem;color:var(--gn)">→ 两条都生效 ✅</p>
-</div>
-<div class="vs-d">VS</div>
-<div class="vs-s no">
-<h4>❌ 相同前端端口 → 覆盖</h4>
-<pre><span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://...3000
+        <p style="font-size:13px;color:var(--gn);margin-top:8px">→ 两条都生效 ✅</p>
+      </div>
+      <div class="vs-d">VS</div>
+      <div class="vs-s no">
+        <h4>❌ 相同前端端口 → 覆盖</h4>
+        <pre data-lang="bash"><span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://...3000
 <span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://...8080</pre>
-<p style="font-size:.82rem;color:var(--rd)">→ 第二条覆盖第一条 ❌</p>
-</div>
-</div>
-</div>
+        <p style="font-size:13px;color:var(--rd);margin-top:8px">→ 第二条覆盖第一条 ❌</p>
+      </div>
+    </div>
+  </div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">⚡ 易混淆：--bg VS 不加</h4>
-<div class="vs">
-<div class="vs-s ok">
-<h4>✅ --bg 后台运行</h4>
-<pre><span class="c1">tailscale serve</span> <span class="c2">--bg</span> https / http://...3000</pre>
-<p style="font-size:.82rem;color:var(--gn)">→ 立即返回，持续运行</p>
-</div>
-<div class="vs-d">VS</div>
-<div class="vs-s warn">
-<h4>⚠️ 不加 → 前台阻塞</h4>
-<pre><span class="c1">tailscale serve</span> https / http://...3000</pre>
-<p style="font-size:.82rem;color:var(--og)">→ Ctrl+C / 断 SSH 就停</p>
-</div>
-</div>
-</div>
-
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">🗑️ 关闭 &amp; 清除</h4>
-<pre><span class="c1">tailscale serve</span> off https:8443    <span class="cm"># 关某条</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">🗑️</span> 关闭 & 清除</div>
+    <pre data-lang="bash"><span class="c1">tailscale serve</span> off https:8443    <span class="cm"># 关某条</span>
 <span class="c1">tailscale serve</span> reset            <span class="cm"># 全清</span>
 <span class="c1">tailscale funnel</span> off https       <span class="cm"># 关 funnel</span></pre>
-</div>
+  </div>
 
-<div class="card">
-<h4 style="color:var(--acl);margin-bottom:.4rem">🗺️ 映射全景图</h4>
-<div class="flow">
-<div class="fb" style="border-color:var(--bl);color:var(--bl)">🌍 外部<br><small>machine.ts.net</small></div>
-<div class="fa">→</div>
-<div class="fb" style="border-color:var(--pk);color:var(--pk)">🔓 Funnel<br><small>公网（可选）</small></div>
-<div class="fa">→</div>
-<div class="fb" style="border-color:var(--ac);color:var(--acl)">🔒 Serve<br><small>自动 HTTPS</small></div>
-<div class="fa">→</div>
-<div class="fb" style="border-color:var(--gn);color:var(--gn)">💻 后端<br><small>本机 / 局域网</small></div>
-</div>
-<pre><span class="cm"># 映射关系：</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">🗺️</span> 映射全景图</div>
+    <div class="flow">
+      <div class="fb" style="border-color:rgba(84,160,255,.3);color:var(--bl)">🌍 外部<br><small>machine.ts.net</small></div>
+      <div class="fa">→</div>
+      <div class="fb" style="border-color:rgba(253,121,168,.3);color:var(--pk)">🔓 Funnel<br><small>公网（可选）</small></div>
+      <div class="fa">→</div>
+      <div class="fb" style="border-color:rgba(0,124,240,.3);color:var(--ac)">🔒 Serve<br><small>自动 HTTPS</small></div>
+      <div class="fa">→</div>
+      <div class="fb" style="border-color:rgba(0,184,148,.3);color:var(--gn)">💻 后端<br><small>本机 / 局域网</small></div>
+    </div>
+    <pre data-lang="bash"><span class="cm"># 映射关系：</span>
 https://machine.ts.net:443  →  127.0.0.1:3000
 https://machine.ts.net:8443 →  127.0.0.1:8080
 https://machine.ts.net:9999 →  127.0.0.1:5173</pre>
+  </div>
 </div>
-</div>
-
-<hr class="divider">
 
 <!-- ================================================================ -->
 <!--                    🔵 TIER 2：经常使用                           -->
 <!-- ================================================================ -->
-<div class="tier"><span class="tier-badge tier-2">🔵 经常使用 · 每周会用到</span></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-tag">Tier 2 — Weekly Use</div>
+    <div class="section-title">🔵 经常使用</div>
+    <div class="section-desc">每周会用到的功能，遇到对应场景时直接翻这里</div>
+  </div>
 
-<!-- Section: 文件传输 -->
-<div class="sec">
-<div class="sec-t">3️⃣ Taildrop — 设备间传文件</div>
-<div class="card">
-<pre><span class="cm"># 发送文件（注意末尾冒号！）</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">3️⃣</span> Taildrop — 设备间传文件</div>
+    <pre data-lang="bash"><span class="cm"># 发送文件（注意末尾冒号！）</span>
 <span class="c1">tailscale file</span> cp ~/report.pdf macbook:
 <span class="c1">tailscale file</span> cp ./image.png server:
 
 <span class="cm"># 接收文件</span>
 <span class="c1">tailscale file</span> get .                <span class="cm"># 接收到当前目录</span>
 <span class="c1">tailscale file</span> get ~/Downloads/     <span class="cm"># 接收到指定目录</span></pre>
-<div class="box bt"><span class="bi">💡</span><p>设备名用 <code class="in">tailscale status</code> 查看。macOS 接收的文件默认在 Downloads。</p></div>
-</div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p>设备名用 <code class="in">tailscale status</code> 查看。macOS 接收的文件默认在 Downloads。</p></div>
+    </div>
+  </div>
 
-<!-- Section: SSH -->
-<div class="sec">
-<div class="sec-t">4️⃣ Tailscale SSH — 免密 SSH</div>
-<div class="card">
-<pre><span class="cm"># 在目标机器上开启（只需一次）</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">4️⃣</span> Tailscale SSH — 免密 SSH</div>
+    <pre data-lang="bash"><span class="cm"># 在目标机器上开启（只需一次）</span>
 <span class="c1">tailscale up</span> <span class="c2">--ssh</span>
 
 <span class="cm"># 从任意设备直接连（无需密码/密钥）</span>
 <span class="c1">tailscale ssh</span> user@server-name
 <span class="c1">tailscale ssh</span> user@100.x.x.x</pre>
-<div class="vs">
-<div class="vs-s ok">
-<h4>✅ Tailscale SSH</h4>
-<ul style="font-size:.88rem;padding-left:1.2rem">
-<li>无需配公钥、无需密码</li>
-<li>ACL 控制权限</li>
-<li>自动加密</li>
-</ul>
-</div>
-<div class="vs-d">VS</div>
-<div class="vs-s warn">
-<h4>⚠️ 普通 SSH</h4>
-<ul style="font-size:.88rem;padding-left:1.2rem">
-<li>需手动配公钥</li>
-<li>需开放 22 端口</li>
-<li>需额外安全加固</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
+    <div class="vs">
+      <div class="vs-s ok">
+        <h4>✅ Tailscale SSH</h4>
+        <ul style="font-size:13px;padding-left:1.2rem;color:var(--dim)">
+          <li>无需配公钥、无需密码</li>
+          <li>ACL 控制权限</li>
+          <li>自动加密</li>
+        </ul>
+      </div>
+      <div class="vs-d">VS</div>
+      <div class="vs-s warn">
+        <h4>⚠️ 普通 SSH</h4>
+        <ul style="font-size:13px;padding-left:1.2rem;color:var(--dim)">
+          <li>需手动配公钥</li>
+          <li>需开放 22 端口</li>
+          <li>需额外安全加固</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 
-<!-- Section: DNS -->
-<div class="sec">
-<div class="sec-t">5️⃣ MagicDNS — 用名字代替 IP</div>
-<div class="card">
-<pre><span class="cm"># 不用记 IP，直接用设备名</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">5️⃣</span> MagicDNS — 用名字代替 IP</div>
+    <pre data-lang="bash"><span class="cm"># 不用记 IP，直接用设备名</span>
 <span class="c1">ping</span> macbook
 <span class="c1">ssh</span> user@server
 <span class="c1">curl</span> http://nas:3000
 
 <span class="cm"># 完整域名</span>
 <span class="c1">ping</span> macbook.tailnet-name.ts.net</pre>
-<div class="box bt"><span class="bi">💡</span><p>MagicDNS 默认开启，自动为每台设备分配名字。用 <code class="in">tailscale status</code> 查看所有设备名。</p></div>
-</div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p>MagicDNS 默认开启，自动为每台设备分配名字。用 <code class="in">tailscale status</code> 查看所有设备名。</p></div>
+    </div>
+  </div>
 
-<!-- Section: 网络排查 -->
-<div class="sec">
-<div class="sec-t">6️⃣ 网络排查 — 连不上时用</div>
-<div class="card">
-<table>
-<thead><tr><th>命令</th><th>作用</th><th>什么时候用</th></tr></thead>
-<tbody>
-<tr><td><code class="in">tailscale ping &lt;device&gt;</code></td><td>测试连通 &amp; 直连/中继</td><td>连不上某设备时</td></tr>
-<tr><td><code class="in">tailscale netcheck</code></td><td>检查网络质量、DERP 延迟</td><td>延迟高/连不上时</td></tr>
-<tr><td><code class="in">tailscale whois &lt;ip&gt;</code></td><td>查 IP 属于哪台设备</td><td>排查访问来源</td></tr>
-<tr><td><code class="in">tailscale bugreport</code></td><td>生成诊断日志</td><td>提交 bug 时</td></tr>
-</tbody>
-</table>
-<pre><span class="cm"># netcheck 关键输出：</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">6️⃣</span> 网络排查 — 连不上时用</div>
+    <table>
+      <thead><tr><th>命令</th><th>作用</th><th>什么时候用</th></tr></thead>
+      <tbody>
+        <tr><td><code class="in">tailscale ping &lt;device&gt;</code></td><td>测试连通 & 直连/中继</td><td>连不上某设备时</td></tr>
+        <tr><td><code class="in">tailscale netcheck</code></td><td>检查网络质量、DERP 延迟</td><td>延迟高/连不上时</td></tr>
+        <tr><td><code class="in">tailscale whois &lt;ip&gt;</code></td><td>查 IP 属于哪台设备</td><td>排查访问来源</td></tr>
+        <tr><td><code class="in">tailscale bugreport</code></td><td>生成诊断日志</td><td>提交 bug 时</td></tr>
+      </tbody>
+    </table>
+    <pre data-lang="bash"><span class="cm"># netcheck 关键输出：</span>
 UDP = <span class="c4">true</span>    <span class="cm"># ✅ 可直连（快）</span>
 UDP = <span class="c1">false</span>   <span class="cm"># ⚠️ 只能中继（通过 DERP 服务器）</span></pre>
+  </div>
 </div>
-</div>
-
-<hr class="divider">
 
 <!-- ================================================================ -->
 <!--                    🟣 TIER 3：进阶功能                           -->
 <!-- ================================================================ -->
-<div class="tier"><span class="tier-badge tier-3">🟣 进阶功能 · 需要时再查</span></div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-tag">Tier 3 — Advanced</div>
+    <div class="section-title">🟣 进阶功能</div>
+    <div class="section-desc">需要时再查，知道有这些功能就行</div>
+  </div>
 
-<!-- Section: Exit Node -->
-<div class="sec">
-<div class="sec-t">7️⃣ Exit Node — 把别的节点当 VPN</div>
-<div class="card">
-<pre><span class="cm"># Step 1: 在出口机器上开启（只需一次）</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">7️⃣</span> Exit Node — 把别的节点当 VPN</div>
+    <pre data-lang="bash"><span class="cm"># Step 1: 在出口机器上开启（只需一次）</span>
 <span class="c1">tailscale up</span> <span class="c2">--advertise-exit-node</span>
 
 <span class="cm"># Step 2: 在其他设备上使用</span>
@@ -310,50 +392,47 @@ UDP = <span class="c1">false</span>   <span class="cm"># ⚠️ 只能中继（�
 
 <span class="cm"># 关闭（恢复正常网络）</span>
 <span class="c1">tailscale up</span> <span class="c2">--exit-node=</span></pre>
-<div class="box bt"><span class="bi">💡</span><p>所有流量都走 Exit Node。用 <code class="in">--exit-node-allow-lan-access</code> 可保留局域网访问。ACL 必须允许。</p></div>
-</div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p>所有流量都走 Exit Node。用 <code class="in">--exit-node-allow-lan-access</code> 可保留局域网访问。ACL 必须允许。</p></div>
+    </div>
+  </div>
 
-<!-- Section: Subnet Router -->
-<div class="sec">
-<div class="sec-t">8️⃣ Subnet Router — 暴露整个局域网</div>
-<div class="card">
-<pre><span class="cm"># 在局域网内的 Tailscale 机器上执行</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">8️⃣</span> Subnet Router — 暴露整个局域网</div>
+    <pre data-lang="bash"><span class="cm"># 在局域网内的 Tailscale 机器上执行</span>
 <span class="c1">tailscale up</span> <span class="c2">--advertise-routes=192.168.1.0/24</span>
 
 <span class="cm"># 其他设备接收路由</span>
 <span class="c1">tailscale up</span> <span class="c2">--accept-routes</span></pre>
-<div class="vs">
-<div class="vs-s ok">
-<h4>✅ Subnet Router</h4>
-<p style="font-size:.85rem;color:var(--gn)">暴露<b>整个网段</b>，访问未装 Tailscale 的设备</p>
-</div>
-<div class="vs-d">VS</div>
-<div class="vs-s warn">
-<h4>🌐 Serve / Funnel</h4>
-<p style="font-size:.85rem;color:var(--og)">暴露<b>本机端口</b>，需本机跑着服务</p>
-</div>
-</div>
-</div>
-</div>
+    <div class="vs">
+      <div class="vs-s ok">
+        <h4>✅ Subnet Router</h4>
+        <p style="font-size:13px;color:var(--gn)">暴露<b>整个网段</b>，访问未装 Tailscale 的设备</p>
+      </div>
+      <div class="vs-d">VS</div>
+      <div class="vs-s warn">
+        <h4>🌐 Serve / Funnel</h4>
+        <p style="font-size:13px;color:var(--og)">暴露<b>本机端口</b>，需本机跑着服务</p>
+      </div>
+    </div>
+  </div>
 
-<!-- Section: 证书 -->
-<div class="sec">
-<div class="sec-t">9️⃣ 证书管理</div>
-<div class="card">
-<pre><span class="cm"># 获取 HTTPS 证书（用于自己的 Web 服务器）</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">9️⃣</span> 证书管理</div>
+    <pre data-lang="bash"><span class="cm"># 获取 HTTPS 证书（用于自己的 Web 服务器）</span>
 <span class="c1">tailscale cert</span> server.tailnet-name.ts.net
 
 <span class="cm"># 生成：server.ts.net.crt + server.ts.net.key</span></pre>
-<div class="box bt"><span class="bi">💡</span><p><code class="in">tailscale serve</code> 已自动处理 HTTPS，<b>不需要</b>手动 cert。只有用自己的 Web 服务器时才用。</p></div>
-</div>
-</div>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><p><code class="in">tailscale serve</code> 已自动处理 HTTPS，<b>不需要</b>手动 cert。只有用自己的 Web 服务器时才用。</p></div>
+    </div>
+  </div>
 
-<!-- Section: ACL -->
-<div class="sec">
-<div class="sec-t">🛡️ ACL 访问控制</div>
-<div class="card">
-<pre><span class="cm">// 在管理后台 → Access Controls 编辑</span>
+  <div class="card fade-in">
+    <div class="card-title"><span class="card-icon">🛡️</span> ACL 访问控制</div>
+    <pre data-lang="json"><span class="cm">// 在管理后台 → Access Controls 编辑</span>
 {
   <span class="c3">"acls"</span>: [{
     <span class="c3">"action"</span>: <span class="c4">"accept"</span>,
@@ -365,214 +444,179 @@ UDP = <span class="c1">false</span>   <span class="cm"># ⚠️ 只能中继（�
     <span class="c3">"attr"</span>: [<span class="c4">"funnel"</span>]    <span class="cm">// 允许 Funnel</span>
   }]
 }</pre>
+  </div>
 </div>
-</div>
-
-<hr class="divider">
 
 <!-- ================================================================ -->
-<!--                    ❓ 学习疑问与答疑                              -->
+<!--                    ❓ FAQ                                         -->
 <!-- ================================================================ -->
+<div id="faq" class="section">
+  <div class="section-header">
+    <div class="section-tag">Q&A</div>
+    <div class="section-title">❓ 学习过程中的疑问 & 答疑</div>
+    <div class="section-desc">实际使用中遇到的真实问题，按场景分类</div>
+  </div>
 
-<div class="sec">
-<div class="sec-t">❓ 学习过程中的疑问 &amp; 答疑</div>
-<div class="box bt"><span class="bi">💡</span><p>以下是实际使用中遇到的真实问题，按场景分类。遇到类似困惑直接翻这里。</p></div>
+  <div class="card fade-in">
+    <div class="card-title" style="color:var(--og)">🔌 端口暴露相关</div>
+    <table>
+      <thead><tr><th>疑问</th><th>答案</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>serve 多次执行，后面的会覆盖前面的吗？</b></td>
+          <td><span class="tag tg">叠加</span> 不同前端端口不会覆盖<br><span class="tag tr">覆盖</span> 相同前端端口会替换</td>
+        </tr>
+        <tr>
+          <td><b>--bg 是什么意思？</b></td>
+          <td>background，后台运行。不加会阻塞终端，断 SSH 就停。<b>建议始终加 --bg。</b></td>
+        </tr>
+        <tr>
+          <td><b>localhost 服务能用 Tailscale IP 直接访问吗？</b></td>
+          <td><b>不能。</b>服务绑定 <code class="in">127.0.0.1</code> 时外部流量进不来。解法：① <code class="in">tailscale serve</code> 代理 ② 改绑定为 <code class="in">0.0.0.0</code></td>
+        </tr>
+        <tr>
+          <td><b>Funnel 的 10000 端口有什么来历？</b></td>
+          <td>Tailscale 硬编码了 3 个 Funnel 允许端口：<b>443</b>（标准 HTTPS）、<b>8443</b>（HTTPS 备用）、<b>10000</b>（Webmin 默认端口）。前端端口只能从这三个选，但后端本地端口随便用什么。</td>
+        </tr>
+        <tr>
+          <td><b>serve 命令中间的 / 是什么意思？</b></td>
+          <td><b>挂载点（Mount Point）</b>，即 URL 路径。<code class="in">/</code> = 根路径匹配所有请求；<code class="in">/api</code> = 只匹配 /api 开头的请求。可以同时配多个挂载点分别转发到不同后端。</td>
+        </tr>
+        <tr>
+          <td><b>后端只能填 127.0.0.1 吗？</b></td>
+          <td><b>不是。</b>后端可以是任意本机能访问到的地址——局域网 IP（<code class="in">192.168.x.x</code>）、Docker 容器（<code class="in">172.17.x.x</code>）都可以。只要运行 serve 的机器能 <code class="in">curl</code> 通目标地址就行。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-<div class="card">
-<h4 style="color:var(--og);margin-bottom:.6rem">🔌 端口暴露相关</h4>
-<table>
-<thead><tr><th>疑问</th><th>答案</th></tr></thead>
-<tbody>
-<tr>
-<td><b>serve 多次执行，后面的会覆盖前面的吗？</b></td>
-<td>
-<span class="tag tg">叠加</span> 不同前端端口不会覆盖：<code class="in">https /</code> 和 <code class="in">https:8443 /</code> 共存<br>
-<span class="tag tr">覆盖</span> 相同前端端口会替换：<code class="in">https /</code> 执行两次，后一次覆盖前一次
-</td>
-</tr>
-<tr>
-<td><b>--bg 是什么意思？</b></td>
-<td>background，后台运行。不加的话命令会阻塞终端，断 SSH 就停了。加了之后立即返回，规则持久化。<b>建议始终加 --bg。</b></td>
-</tr>
-<tr>
-<td><b>localhost 服务能用 Tailscale IP 直接访问吗？</b></td>
-<td>
-<b>不能。</b>服务绑定 <code class="in">127.0.0.1</code> 时，外部流量进不来。<br>
-两种解法：<br>
-① <code class="in">tailscale serve</code> 在本机做代理，转发到 127.0.0.1 ✅<br>
-② 改绑定地址为 <code class="in">0.0.0.0</code>，让所有网卡可访问 ✅
-</td>
-</tr>
-<tr>
-<td><b>Funnel 的 10000 端口有什么来历？</b></td>
-<td>Tailscale 硬编码了 3 个 Funnel 允许端口：<b>443</b>（标准 HTTPS）、<b>8443</b>（HTTPS 备用）、<b>10000</b>（Webmin 默认端口，选它是因为好记、不易冲突、非特权端口）。前端端口只能从这三个选，但后端本地端口随便用什么。</td>
-</tr>
-<tr>
-<td><b>怎么让没装 Tailscale 的人也能访问我的网页？</b></td>
-<td>
-用 <b>Funnel</b> 开放到公网：<br>
-<code class="in">tailscale serve --bg https / http://127.0.0.1:3000</code><br>
-<code class="in">tailscale funnel --bg https / http://127.0.0.1:3000</code><br>
-然后把 <code class="in">https://your-machine.ts.net</code> 发给对方即可。<br>
-⚠️ 前提：ACL 里要允许 Funnel（nodeAttrs 加 <code class="in">"funnel"</code>）。
-</td>
-</tr>
-<tr>
-<td><b>多台电脑的多个端口怎么暴露？</b></td>
-<td>每台机器各自执行 <code class="in">tailscale serve --bg</code>，指定不同前端端口。互不影响，因为每台机器有自己的域名。</td>
-</tr>
-</tbody>
-</table>
+  <div class="card fade-in">
+    <div class="card-title" style="color:var(--bl)">🌐 网络原理相关</div>
+    <table>
+      <thead><tr><th>疑问</th><th>答案</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Serve 和 Funnel 到底什么区别？</b></td>
+          <td><b>Serve</b> = 暴露给 Tailnet 内部设备（装了 Tailscale 的）<br><b>Funnel</b> = 在 Serve 基础上再开放到公网（任何人都能访问）<br>Funnel 包含 Serve 的功能，但端口受限制（443/8443/10000）。</td>
+        </tr>
+        <tr>
+          <td><b>改绑定 0.0.0.0 和用 Serve 有什么区别？</b></td>
+          <td><code class="in">0.0.0.0</code> = 所有网卡都监听，局域网设备也能访问（不够安全）<br><code class="in">tailscale serve</code> = 只有 Tailscale 网络能访问，自动 HTTPS（更安全）<br><b>不想改代码就用 serve，想最省事就改绑定地址。</b></td>
+        </tr>
+        <tr>
+          <td><b>直连和中继有什么区别？</b></td>
+          <td><b>直连（Direct）</b>：设备间 WireGuard 打洞成功，点对点通信，延迟低速度快。<br><b>中继（Relay/DERP）</b>：打洞失败，通过 Tailscale 中继服务器转发，延迟较高。<br>用 <code class="in">tailscale ping &lt;device&gt;</code> 查看走的是哪种。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card fade-in">
+    <div class="card-title" style="color:var(--gn)">🛠️ 实操相关</div>
+    <table>
+      <thead><tr><th>疑问</th><th>答案</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Funnel 执行后报错怎么办？</b></td>
+          <td>① ACL 没开 Funnel → 管理后台加 <code class="in">"attr": ["funnel"]</code><br>② 端口不在允许范围 → 只能用 443/8443/10000<br>③ Tailscale 版本太旧 → <code class="in">tailscale update</code> 升级</td>
+        </tr>
+        <tr>
+          <td><b>怎么确认 serve/funnel 规则是否生效？</b></td>
+          <td><code class="in">tailscale serve status</code> — 查看所有 Serve 规则<br><code class="in">tailscale funnel status</code> — 查看所有 Funnel 规则<br>每次执行后养成跑 status 确认的习惯。</td>
+        </tr>
+        <tr>
+          <td><b>规则搞乱了怎么重来？</b></td>
+          <td><code class="in">tailscale serve reset</code> — 清除所有 Serve 规则<br><code class="in">tailscale funnel reset</code> — 清除所有 Funnel 规则<br>然后重新添加即可。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<div class="card">
-<h4 style="color:var(--bl);margin-bottom:.6rem">🌐 网络原理相关</h4>
-<table>
-<thead><tr><th>疑问</th><th>答案</th></tr></thead>
-<tbody>
-<tr>
-<td><b>serve 命令中间的 / 是什么意思？</b></td>
-<td>
-<b>挂载点（Mount Point）</b>，即 URL 路径。<code class="in">/</code> = 根路径匹配所有请求；<code class="in">/api</code> = 只匹配 /api 开头的请求。可以同时配多个挂载点分别转发到不同后端。
-</td>
-</tr>
-<tr>
-<td><b>后端只能填 127.0.0.1 吗？</b></td>
-<td>
-<b>不是。</b>后端可以是任意本机能访问到的地址——局域网 IP（<code class="in">192.168.x.x</code>）、Docker 容器（<code class="in">172.17.x.x</code>）都可以。只要运行 serve 的机器能 <code class="in">curl</code> 通目标地址就行。
-</td>
-</tr>
-<tr>
-<td><b>Serve 和 Funnel 到底什么区别？</b></td>
-<td>
-<b>Serve</b> = 暴露给 Tailnet 内部设备（装了 Tailscale 的）<br>
-<b>Funnel</b> = 在 Serve 基础上再开放到公网（任何人都能访问）<br>
-Funnel 包含 Serve 的功能，但端口受限制（443/8443/10000）。
-</td>
-</tr>
-<tr>
-<td><b>改绑定 0.0.0.0 和用 Serve 有什么区别？</b></td>
-<td>
-<code class="in">0.0.0.0</code> = 所有网卡都监听，局域网设备也能访问（不够安全）<br>
-<code class="in">tailscale serve</code> = 只有 Tailscale 网络能访问，自动 HTTPS（更安全）<br>
-<b>不想改代码就用 serve，想最省事就改绑定地址。</b>
-</td>
-</tr>
-<tr>
-<td><b>直连和中继有什么区别？</b></td>
-<td>
-<b>直连（Direct）</b>：设备间 WireGuard 打洞成功，点对点通信，延迟低速度快。<br>
-<b>中继（Relay/DERP）</b>：打洞失败，通过 Tailscale 中继服务器转发，延迟较高。<br>
-用 <code class="in">tailscale ping &lt;device&gt;</code> 查看走的是哪种。
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div class="card">
-<h4 style="color:var(--gn);margin-bottom:.6rem">🛠️ 实操相关</h4>
-<table>
-<thead><tr><th>疑问</th><th>答案</th></tr></thead>
-<tbody>
-<tr>
-<td><b>Funnel 执行后报错怎么办？</b></td>
-<td>
-常见原因：<br>
-① ACL 没开 Funnel → 管理后台加 <code class="in">"attr": ["funnel"]</code><br>
-② 端口不在允许范围 → 只能用 443/8443/10000<br>
-③ Tailscale 版本太旧 → <code class="in">tailscale update</code> 升级
-</td>
-</tr>
-<tr>
-<td><b>怎么确认 serve/funnel 规则是否生效？</b></td>
-<td>
-<code class="in">tailscale serve status</code> — 查看所有 Serve 规则<br>
-<code class="in">tailscale funnel status</code> — 查看所有 Funnel 规则<br>
-每次执行后养成跑 status 确认的习惯。
-</td>
-</tr>
-<tr>
-<td><b>规则搞乱了怎么重来？</b></td>
-<td>
-<code class="in">tailscale serve reset</code> — 清除所有 Serve 规则<br>
-<code class="in">tailscale funnel reset</code> — 清除所有 Funnel 规则<br>
-然后重新添加即可。
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<hr class="divider">
 
 <!-- ================================================================ -->
 <!--                    📚 完整参考表                                 -->
 <!-- ================================================================ -->
-
-<div class="sec">
-<div class="sec-t">📚 完整命令参考表</div>
-<div class="card">
-<table>
-<thead><tr><th>分类</th><th>命令</th><th>作用</th><th>频率</th></tr></thead>
-<tbody>
-<tr><td rowspan="4"><b>基础</b></td><td><code class="in">tailscale up</code></td><td>连接网络</td><td>⭐⭐⭐</td></tr>
-<tr><td><code class="in">tailscale down</code></td><td>断开网络</td><td>⭐⭐</td></tr>
-<tr><td><code class="in">tailscale status</code></td><td>查看设备列表</td><td>⭐⭐⭐</td></tr>
-<tr><td><code class="in">tailscale ip [-4|-6]</code></td><td>查看本机 IP</td><td>⭐⭐⭐</td></tr>
-<tr><td rowspan="4"><b>端口暴露</b></td><td><code class="in">tailscale serve --bg https / http://...</code></td><td>Serve 暴露</td><td>⭐⭐⭐</td></tr>
-<tr><td><code class="in">tailscale funnel --bg ...</code></td><td>Funnel 公网</td><td>⭐⭐</td></tr>
-<tr><td><code class="in">tailscale serve status</code></td><td>查看规则</td><td>⭐⭐⭐</td></tr>
-<tr><td><code class="in">tailscale serve reset</code></td><td>清除规则</td><td>⭐⭐</td></tr>
-<tr><td rowspan="2"><b>文件</b></td><td><code class="in">tailscale file cp &lt;file&gt; &lt;device&gt;:</code></td><td>发送文件</td><td>⭐⭐</td></tr>
-<tr><td><code class="in">tailscale file get &lt;dir&gt;</code></td><td>接收文件</td><td>⭐⭐</td></tr>
-<tr><td rowspan="2"><b>SSH</b></td><td><code class="in">tailscale up --ssh</code></td><td>开启 SSH</td><td>⭐⭐</td></tr>
-<tr><td><code class="in">tailscale ssh user@device</code></td><td>连接 SSH</td><td>⭐⭐</td></tr>
-<tr><td rowspan="3"><b>诊断</b></td><td><code class="in">tailscale ping &lt;device&gt;</code></td><td>测试连通</td><td>⭐⭐</td></tr>
-<tr><td><code class="in">tailscale netcheck</code></td><td>网络诊断</td><td>⭐⭐</td></tr>
-<tr><td><code class="in">tailscale bugreport</code></td><td>诊断日志</td><td>⭐</td></tr>
-<tr><td rowspan="2"><b>Exit Node</b></td><td><code class="in">tailscale up --advertise-exit-node</code></td><td>声明出口</td><td>⭐</td></tr>
-<tr><td><code class="in">tailscale up --exit-node=&lt;name&gt;</code></td><td>使用出口</td><td>⭐</td></tr>
-<tr><td rowspan="2"><b>子网</b></td><td><code class="in">tailscale up --advertise-routes=...</code></td><td>暴露子网</td><td>⭐</td></tr>
-<tr><td><code class="in">tailscale up --accept-routes</code></td><td>接收路由</td><td>⭐</td></tr>
-<tr><td><b>证书</b></td><td><code class="in">tailscale cert &lt;domain&gt;</code></td><td>获取证书</td><td>⭐</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<!-- 坑点 -->
-<div class="sec">
-<div class="sec-t">💣 常见坑点</div>
-<div class="card">
-<table>
-<thead><tr><th>坑</th><th>原因</th><th>解法</th></tr></thead>
-<tbody>
-<tr><td><span class="tag tr">相同端口覆盖</span></td><td>前端端口相同时后执行覆盖前</td><td>指定不同前端端口 <code class="in">https:8443</code></td></tr>
-<tr><td><span class="tag to">Funnel 端口限制</span></td><td>公网只开放特定端口</td><td>用 443 / 8443 / 10000</td></tr>
-<tr><td><span class="tag to">Funnel 需开 ACL</span></td><td>默认不允许</td><td>管理后台 ACL → nodeAttrs 允许 funnel</td></tr>
-<tr><td><span class="tag tb">不加 --bg 断连</span></td><td>前台运行，SSH 断了停</td><td>养成加 <code class="in">--bg</code> 习惯</td></tr>
-<tr><td><span class="tag tb">防火墙拦截</span></td><td>系统防火墙挡端口</td><td>检查 <code class="in">ufw</code> 或 macOS 防火墙</td></tr>
-<tr><td><span class="tag tb">域名访问不了</span></td><td>机器名含特殊字符</td><td><code class="in">tailscale status</code> 查看正确名称</td></tr>
-<tr><td><span class="tag tb">传文件没冒号</span></td><td>file cp 必须加 <code class="in">:</code></td><td><code class="in">tailscale file cp file.pdf macbook:</code></td></tr>
-</tbody>
-</table>
-</div>
+<div class="section">
+  <div class="section-header">
+    <div class="section-tag">Reference</div>
+    <div class="section-title">📚 完整命令参考表</div>
+  </div>
+  <div class="card fade-in">
+    <table>
+      <thead><tr><th>分类</th><th>命令</th><th>作用</th><th>频率</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="4"><b>基础</b></td><td><code class="in">tailscale up</code></td><td>连接网络</td><td>⭐⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale down</code></td><td>断开网络</td><td>⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale status</code></td><td>查看设备列表</td><td>⭐⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale ip [-4|-6]</code></td><td>查看本机 IP</td><td>⭐⭐⭐</td></tr>
+        <tr><td rowspan="4"><b>端口暴露</b></td><td><code class="in">tailscale serve --bg https / http://...</code></td><td>Serve 暴露</td><td>⭐⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale funnel --bg ...</code></td><td>Funnel 公网</td><td>⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale serve status</code></td><td>查看规则</td><td>⭐⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale serve reset</code></td><td>清除规则</td><td>⭐⭐</td></tr>
+        <tr><td rowspan="2"><b>文件</b></td><td><code class="in">tailscale file cp &lt;file&gt; &lt;device&gt;:</code></td><td>发送文件</td><td>⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale file get &lt;dir&gt;</code></td><td>接收文件</td><td>⭐⭐</td></tr>
+        <tr><td rowspan="2"><b>SSH</b></td><td><code class="in">tailscale up --ssh</code></td><td>开启 SSH</td><td>⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale ssh user@device</code></td><td>连接 SSH</td><td>⭐⭐</td></tr>
+        <tr><td rowspan="3"><b>诊断</b></td><td><code class="in">tailscale ping &lt;device&gt;</code></td><td>测试连通</td><td>⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale netcheck</code></td><td>网络诊断</td><td>⭐⭐</td></tr>
+        <tr><td><code class="in">tailscale bugreport</code></td><td>诊断日志</td><td>⭐</td></tr>
+        <tr><td rowspan="2"><b>Exit Node</b></td><td><code class="in">tailscale up --advertise-exit-node</code></td><td>声明出口</td><td>⭐</td></tr>
+        <tr><td><code class="in">tailscale up --exit-node=&lt;name&gt;</code></td><td>使用出口</td><td>⭐</td></tr>
+        <tr><td rowspan="2"><b>子网</b></td><td><code class="in">tailscale up --advertise-routes=...</code></td><td>暴露子网</td><td>⭐</td></tr>
+        <tr><td><code class="in">tailscale up --accept-routes</code></td><td>接收路由</td><td>⭐</td></tr>
+        <tr><td><b>证书</b></td><td><code class="in">tailscale cert &lt;domain&gt;</code></td><td>获取证书</td><td>⭐</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- 发音指南 -->
-<div class="sec">
-<div class="sec-t">🔊 术语发音指南（点击播放）</div>
-<div class="card">
-<p style="color:var(--dim);font-size:.88rem;margin-bottom:.8rem">点击任意术语即可听到英文发音 👇</p>
-<div id="pron-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.6rem">
-</div>
-</div>
+<!-- ================================================================ -->
+<!--                    💣 坑点                                       -->
+<!-- ================================================================ -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-tag">Pitfalls</div>
+    <div class="section-title">💣 常见坑点</div>
+  </div>
+  <div class="card fade-in">
+    <table>
+      <thead><tr><th>坑</th><th>原因</th><th>解法</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tr">相同端口覆盖</span></td><td>前端端口相同时后执行覆盖前</td><td>指定不同前端端口 <code class="in">https:8443</code></td></tr>
+        <tr><td><span class="tag to">Funnel 端口限制</span></td><td>公网只开放特定端口</td><td>用 443 / 8443 / 10000</td></tr>
+        <tr><td><span class="tag to">Funnel 需开 ACL</span></td><td>默认不允许</td><td>管理后台 ACL → nodeAttrs 允许 funnel</td></tr>
+        <tr><td><span class="tag tb">不加 --bg 断连</span></td><td>前台运行，SSH 断了停</td><td>养成加 <code class="in">--bg</code> 习惯</td></tr>
+        <tr><td><span class="tag tb">防火墙拦截</span></td><td>系统防火墙挡端口</td><td>检查 <code class="in">ufw</code> 或 macOS 防火墙</td></tr>
+        <tr><td><span class="tag tb">域名访问不了</span></td><td>机器名含特殊字符</td><td><code class="in">tailscale status</code> 查看正确名称</td></tr>
+        <tr><td><span class="tag tb">传文件没冒号</span></td><td>file cp 必须加 <code class="in">:</code></td><td><code class="in">tailscale file cp file.pdf macbook:</code></td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<div style="text-align:center;padding:1.5rem 0;color:var(--dim);font-size:.82rem;border-top:1px solid var(--bd);margin-top:1.5rem">
-Tailscale 完全速查手册 · 按使用频率排列 · 保存备用 ⚡
+<!-- ================================================================ -->
+<!--                    🔊 发音指南                                   -->
+<!-- ================================================================ -->
+<div id="pronunciation" class="section">
+  <div class="section-header">
+    <div class="section-tag">Pronunciation</div>
+    <div class="section-title">🔊 术语发音指南</div>
+    <div class="section-desc">点击任意术语即可听到英文发音（Edge-TTS · en-US-JennyNeural）</div>
+  </div>
+  <div class="card fade-in">
+    <div class="pron-grid" id="pron-grid"></div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <div class="container">
+    <p>Tailscale 完全速查手册 · 按使用频率排列 · 保存备用 ⚡</p>
+    <p><a href="https://lif3ng.github.io/agent-crafted/">← Agent Crafted 全部手册</a></p>
+    <p style="margin-top:8px;color:var(--dim2)">Crafted by AI through conversations</p>
+  </div>
 </div>
 
 <script>
@@ -602,24 +646,33 @@ const terms = [
 const grid = document.getElementById('pron-grid');
 terms.forEach(t => {
   const el = document.createElement('div');
-  el.style.cssText = 'background:var(--sf2);border:1px solid var(--bd);border-radius:8px;padding:.6rem .8rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .2s;user-select:none';
+  el.className = 'pron-item';
   el.innerHTML = `
-    <span style="font-size:1.1rem">🔊</span>
-    <div style="flex:1;min-width:0">
-      <div style="font-weight:600;font-size:.92rem">${t.word}</div>
-      <div style="font-size:.76rem;color:var(--dim)">${t.tip} · ${t.zh}</div>
+    <span class="sound">🔊</span>
+    <div class="info">
+      <div class="word">${t.word}</div>
+      <div class="meta">${t.tip} · ${t.zh}</div>
     </div>
   `;
-  el.onmouseenter = () => { el.style.borderColor = 'var(--ac)'; el.style.background = 'rgba(108,92,231,.08)'; };
-  el.onmouseleave = () => { el.style.borderColor = 'var(--bd)'; el.style.background = 'var(--sf2)'; };
-  function speak() {
+  el.onclick = () => {
     const audio = new Audio('pron/' + t.file + '.mp3');
-    audio.play().catch(e => {
-      console.warn('Audio failed:', e);
-    });
-  }
-  el.onclick = speak;
+    audio.play().catch(e => console.warn('Audio failed:', e));
+  };
   grid.appendChild(el);
+});
+
+// Intersection Observer for fade-in animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.animationPlayState = 'running';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => {
+  el.style.animationPlayState = 'paused';
+  observer.observe(el);
 });
 </script>
 

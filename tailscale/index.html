@@ -103,7 +103,7 @@ tr:hover td{background:rgba(0,124,240,.03)}
 
 /* ===== ANIMATIONS ===== */
 @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.fade-in{animation:fadeInUp .6s ease both}
+.fade-in{animation:fadeInUp .6s ease both;animation-delay:calc(var(--i,0) * 0.03s)}
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:768px){
@@ -661,18 +661,9 @@ terms.forEach(t => {
   grid.appendChild(el);
 });
 
-// Intersection Observer for fade-in animations
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.style.animationPlayState = 'running';
-    }
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.fade-in').forEach(el => {
-  el.style.animationPlayState = 'paused';
-  observer.observe(el);
+// Assign stagger delay to each fade-in card
+document.querySelectorAll('.fade-in').forEach((el, i) => {
+  el.style.setProperty('--i', i);
 });
 </script>
 

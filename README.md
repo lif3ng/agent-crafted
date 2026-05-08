@@ -17,6 +17,7 @@
 | 标题 | 简介 | 标签 | 路径 |
 |------|------|------|------|
 | [Tailscale 完全速查手册](tailscale/) | VPN 组网工具全覆盖：日常命令、端口暴露、网络排查、进阶配置 | 🟢 网络 | `tailscale/` |
+| [Crontab 交互式学习手册](crontab/) | Cron 定时任务完全指南：语法解析、交互式练习、常用示例、在线调试 | 🟡 运维 | `crontab/` |
 
 ## 🏗️ 仓库结构
 
@@ -36,6 +37,8 @@ agent-crafted/
 │       ├── tailscale.mp3
 │       └── ...
 │
+├── crontab/            ← Crontab 交互式学习手册
+│   └── index.html
 └── {topic}/               ← 未来新增的手册
     ├── index.html
     └── pron/
@@ -59,3 +62,4 @@ python3 build.py
 ## 📜 License
 
 MIT
+# test2

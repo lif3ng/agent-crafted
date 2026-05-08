@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crontab 交互式学习</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #0f172a; --card: #1e293b; --border: #334155; --accent: #38bdf8; --green: #4ade80; --red: #f87171; --yellow: #fbbf24; --text: #e2e8f0; --muted: #94a3b8; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+.container { max-width: 960px; margin: 0 auto; padding: 20px; }
+h1 { text-align: center; font-size: 2rem; margin: 20px 0; background: linear-gradient(135deg, var(--accent), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.subtitle { text-align: center; color: var(--muted); margin-bottom: 30px; }
+.tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--card); border-radius: 12px; padding: 4px; }
+.tab { flex: 1; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 14px; color: var(--muted); user-select: none; }
+.tab:hover { color: var(--text); }
+.tab.active { background: var(--accent); color: #000; font-weight: 600; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card h2 { font-size: 1.3rem; margin-bottom: 16px; color: var(--accent); }
+.cron-input { display: flex; gap: 8px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+.cron-field { text-align: center; }
+.cron-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.cron-field input { width: 60px; padding: 8px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); color: var(--text); text-align: center; font-size: 16px; font-family: monospace; }
+.cron-field input:focus { border-color: var(--accent); outline: none; }
+.cron-full { flex: 1; min-width: 200px; }
+.cron-full input { width: 100%; padding: 8px 12px; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); color: var(--text); font-family: monospace; font-size: 16px; }
+.cron-full input:focus { border-color: var(--accent); outline: none; }
+.result-box { padding: 16px; border-radius: 8px; margin: 12px 0; font-size: 15px; }
+.result-box.ok { background: rgba(74,222,128,0.1); border: 1px solid var(--green); }
+.result-box.err { background: rgba(248,113,113,0.1); border: 1px solid var(--red); }
+.next-runs { margin-top: 12px; }
+.next-runs h4 { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.next-runs li { font-family: monospace; color: var(--green); margin: 4px 0; list-style: none; }
+.field-explain { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 12px; }
+.field-explain div { background: var(--bg); padding: 8px; border-radius: 6px; font-size: 13px; }
+.field-explain span { color: var(--accent); font-weight: 600; }
+.ref-table { width: 100%; border-collapse: collapse; }
+.ref-table th, .ref-table td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border); }
+.ref-table th { color: var(--accent); font-size: 13px; }
+.ref-table code { background: var(--bg); padding: 2px 8px; border-radius: 4px; color: var(--green); font-size: 14px; }
+.quiz-question { font-size: 18px; margin-bottom: 16px; font-weight: 500; }
+.quiz-options { display: grid; gap: 10px; }
+.quiz-opt { padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s; font-family: monospace; font-size: 15px; user-select: none; }
+.quiz-opt:hover { border-color: var(--accent); background: rgba(56,189,248,0.05); }
+.quiz-opt.correct { border-color: var(--green); background: rgba(74,222,128,0.1); }
+.quiz-opt.wrong { border-color: var(--red); background: rgba(248,113,113,0.1); }
+.quiz-opt.disabled { pointer-events: none; opacity: 0.6; }
+.quiz-progress { display: flex; gap: 6px; margin-bottom: 16px; }
+.quiz-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--border); }
+.quiz-dot.done { background: var(--green); }
+.quiz-dot.current { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.quiz-score { text-align: center; padding: 30px; }
+.quiz-score .score { font-size: 3rem; font-weight: 700; color: var(--accent); }
+.btn { padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.2s; }
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); }
+.section { display: none !important; }
+.section.active { display: block !important; }
+.example-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.example-row:last-child { border-bottom: none; }
+.example-desc { color: var(--muted); font-size: 14px; }
+.preset-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.preset-btn { padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; font-size: 13px; transition: all 0.2s; }
+.preset-btn:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>⏰ Crontab 交互式学习</h1>
+<p class="subtitle">掌握 Linux 定时任务表达式 — 在线练习 · 即时反馈</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('playground',this)">🎮 练习场</div>
+  <div class="tab" onclick="showTab('reference',this)">📖 语法参考</div>
+  <div class="tab" onclick="showTab('quiz',this)">🧪 挑战测试</div>
+</div>
+
+<!-- Playground -->
+<div id="playground" class="section active">
+  <div class="card">
+    <h2>📝 Cron 表达式练习</h2>
+    <div class="cron-input">
+      <div class="cron-field"><label>分</label><input id="f-min" value="*/5" oninput="syncFromFields()"></div>
+      <div class="cron-field"><label>时</label><input id="f-hour" value="*" oninput="syncFromFields()"></div>
+      <div class="cron-field"><label>日</label><input id="f-dom" value="*" oninput="syncFromFields()"></div>
+      <div class="cron-field"><label>月</label><input id="f-mon" value="*" oninput="syncFromFields()"></div>
+      <div class="cron-field"><label>周</label><input id="f-dow" value="*" oninput="syncFromFields()"></div>
+      <div class="cron-full"><input id="f-full" value="*/5 * * * *" oninput="syncFromFull()"></div>
+    </div>
+    <div id="playground-result"></div>
+    <div class="preset-btns">
+      <span style="color:var(--muted);font-size:13px;line-height:30px;">快捷：</span>
+      <button class="preset-btn" onclick="setCron('*/1 * * * *')">每分钟</button>
+      <button class="preset-btn" onclick="setCron('0 * * * *')">每小时</button>
+      <button class="preset-btn" onclick="setCron('0 0 * * *')">每天零点</button>
+      <button class="preset-btn" onclick="setCron('0 8 * * 1-5')">工作日早8点</button>
+      <button class="preset-btn" onclick="setCron('0 0 1 * *')">每月1号</button>
+      <button class="preset-btn" onclick="setCron('0 0 1 1 *')">每年1月1日</button>
+      <button class="preset-btn" onclick="setCron('*/15 * * * *')">每15分钟</button>
+      <button class="preset-btn" onclick="setCron('30 6 * * 0')">每周日6:30</button>
+      <button class="preset-btn" onclick="setCron('0 9,18 * * *')">每天9点和18点</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reference -->
+<div id="reference" class="section">
+  <div class="card">
+    <h2>📐 Cron 表达式格式</h2>
+    <div style="text-align:center;margin:16px 0 20px;">
+      <img src="cron-format.svg?v=2" alt="Cron表达式格式" style="max-width:100%;border-radius:8px;">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🔤 特殊字符</h2>
+    <table class="ref-table">
+      <tr><th>符号</th><th>含义</th><th>示例</th></tr>
+      <tr><td><code>*</code></td><td>任意值</td><td><code>* * * * *</code> = 每分钟</td></tr>
+      <tr><td><code>,</code></td><td>列举多个值</td><td><code>0 9,18 * * *</code> = 每天9点和18点</td></tr>
+      <tr><td><code>-</code></td><td>范围</td><td><code>0 9-17 * * *</code> = 每天9到17点</td></tr>
+      <tr><td><code>/</code></td><td>步长</td><td><code>*/15 * * * *</code> = 每15分钟</td></tr>
+      <tr><td><code>L</code></td><td>最后（日/周）</td><td><code>0 0 L * *</code> = 每月最后一天</td></tr>
+      <tr><td><code>W</code></td><td>最近工作日</td><td><code>0 0 15W * *</code> = 最接近15号的工作日</td></tr>
+      <tr><td><code>#</code></td><td>第几个星期几</td><td><code>0 0 * * 5#3</code> = 第3个周五</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>📋 常用示例</h2>
+    <div class="example-row"><code>*/5 * * * *</code><span class="example-desc">每5分钟</span></div>
+    <div class="example-row"><code>0 */2 * * *</code><span class="example-desc">每2小时</span></div>
+    <div class="example-row"><code>0 0 * * *</code><span class="example-desc">每天午夜</span></div>
+    <div class="example-row"><code>0 2 * * *</code><span class="example-desc">每天凌晨2点</span></div>
+    <div class="example-row"><code>0 0 * * 0</code><span class="example-desc">每周日午夜</span></div>
+    <div class="example-row"><code>0 0 * * 1</code><span class="example-desc">每周一午夜</span></div>
+    <div class="example-row"><code>0 0 1 * *</code><span class="example-desc">每月1号午夜</span></div>
+    <div class="example-row"><code>0 8 * * 1-5</code><span class="example-desc">工作日早8点</span></div>
+    <div class="example-row"><code>30 4 * * 6</code><span class="example-desc">每周六凌晨4:30</span></div>
+    <div class="example-row"><code>0 0 1 1 *</code><span class="example-desc">每年1月1日</span></div>
+    <div class="example-row"><code>0,30 * 1,15 * *</code><span class="example-desc">1号和15号每半小时</span></div>
+  </div>
+
+  <div class="card">
+    <h2>💡 特殊字符串（简写）</h2>
+    <table class="ref-table">
+      <tr><th>简写</th><th>等价于</th><th>含义</th></tr>
+      <tr><td><code>@yearly</code></td><td><code>0 0 1 1 *</code></td><td>每年一次</td></tr>
+      <tr><td><code>@monthly</code></td><td><code>0 0 1 * *</code></td><td>每月一次</td></tr>
+      <tr><td><code>@weekly</code></td><td><code>0 0 * * 0</code></td><td>每周一次</td></tr>
+      <tr><td><code>@daily</code></td><td><code>0 0 * * *</code></td><td>每天一次</td></tr>
+      <tr><td><code>@hourly</code></td><td><code>0 * * * *</code></td><td>每小时一次</td></tr>
+      <tr><td><code>@reboot</code></td><td>—</td><td>每次启动时</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>🖥️ 常用命令</h2>
+    <table class="ref-table">
+      <tr><th>命令</th><th>说明</th></tr>
+      <tr><td><code>crontab -e</code></td><td>编辑当前用户的 crontab</td></tr>
+      <tr><td><code>crontab -l</code></td><td>列出当前用户的定时任务</td></tr>
+      <tr><td><code>crontab -r</code></td><td>删除当前用户的所有定时任务</td></tr>
+      <tr><td><code>crontab -u user -l</code></td><td>查看指定用户的定时任务</td></tr>
+      <tr><td><code>crontab filename</code></td><td>从文件导入定时任务</td></tr>
+    </table>
+    <div style="margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;font-size:13px;color:var(--muted);">
+      💡 <strong>提示：</strong>crontab 文件中可以设置环境变量：<br>
+      <code style="color:var(--green)">SHELL=/bin/bash</code><br>
+      <code style="color:var(--green)">PATH=/usr/local/bin:/usr/bin</code><br>
+      <code style="color:var(--green)">MAILTO=your@email.com</code><br>
+      日志重定向：<code style="color:var(--green)">*/5 * * * * /path/to/script.sh >> /var/log/my.log 2>&1</code>
+    </div>
+  </div>
+</div>
+
+<!-- Quiz -->
+<div id="quiz" class="section">
+  <div class="card">
+    <h2>🧪 Cron 挑战测试</h2>
+    <div id="quiz-progress" class="quiz-progress"></div>
+    <div id="quiz-content"></div>
+    <div id="quiz-score" class="quiz-score" style="display:none;"></div>
+    <div style="margin-top:16px;text-align:center;">
+      <button class="btn btn-outline" onclick="resetQuiz()">重新开始</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function showTab(id, el) {
+  try {
+    var sections = document.querySelectorAll('.section');
+    for (var i = 0; i < sections.length; i++) sections[i].className = sections[i].className.replace(' active', '');
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].className = tabs[i].className.replace(' active', '');
+    document.getElementById(id).className += ' active';
+    if (el) el.className += ' active';
+    if (id === 'quiz') resetQuiz();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+
+function parseCron(expr) {
+  expr = expr.trim();
+  if (expr.startsWith('@')) return parseSpecial(expr);
+  var parts = expr.split(/\s+/);
+  if (parts.length !== 5) return { ok: false, error: '需要5个字段' };
+  var names = ['分钟','小时','日','月','周'];
+  var description = [];
+  for (var i = 0; i < 5; i++) {
+    var field = parts[i].toLowerCase();
+    if (field === '*') { description.push(names[i] + ': 任意值'); continue; }
+    if (field.startsWith('*/')) {
+      var step = parseInt(field.slice(2));
+      if (isNaN(step) || step < 1) return { ok: false, error: names[i] + ': 无效步长' };
+      var units = ['分钟','小时','天','个月',''];
+      description.push(names[i] + ': 每 ' + step + ' ' + units[i]);
+      continue;
+    }
+    if (field.includes(',') ) { description.push(names[i] + ': ' + field.split(',').join(', ')); continue; }
+    var rangeMatch = field.match(/^(\d+)-(\d+)$/);
+    if (rangeMatch) { description.push(names[i] + ': ' + rangeMatch[1] + ' 到 ' + rangeMatch[2]); continue; }
+    var val = parseInt(field);
+    if (isNaN(val)) return { ok: false, error: names[i] + ': 无效值 "' + parts[i] + '"' };
+    description.push(names[i] + ': ' + val);
+  }
+  var human = generateHuman(parts);
+  var nextRuns = generateNextRuns(parts);
+  return { ok: true, description: description, human: human, nextRuns: nextRuns };
+}
+
+function parseSpecial(expr) {
+  var specials = { '@yearly':'0 0 1 1 *', '@annually':'0 0 1 1 *', '@monthly':'0 0 1 * *', '@weekly':'0 0 * * 0', '@daily':'0 0 * * *', '@midnight':'0 0 * * *', '@hourly':'0 * * * *' };
+  var mapped = specials[expr.toLowerCase()];
+  if (mapped) return parseCron(mapped);
+  if (expr.toLowerCase() === '@reboot') return { ok: true, description: ['每次系统启动时执行'], human: '每次系统启动时执行', nextRuns: [] };
+  return { ok: false, error: '未知特殊字符串: ' + expr };
+}
+
+function generateHuman(parts) {
+  var min=parts[0], hour=parts[1], dom=parts[2], mon=parts[3], dow=parts[4];
+  if (min==='*' && hour==='*' && dom==='*' && mon==='*' && dow==='*') return '每分钟执行';
+  var time='', day='', when='';
+  if (min==='*' && hour==='*') time='每分钟';
+  else if (min.startsWith('*/') && hour==='*') time='每'+min.slice(2)+'分钟';
+  else if (hour.startsWith('*/')) time='每'+hour.slice(2)+'小时的'+(min==='*'?'每':min)+'分';
+  else if (hour.includes(',')) time='每天 '+hour.split(',').map(function(h){return h.padStart(2,'0')+':'+(min==='*'?'00':min.padStart(2,'0'))}).join('、');
+  else time=(hour==='*'?'00':hour).padStart(2,'0')+':'+(min==='*'?'00':min).padStart(2,'0');
+  if (dow!=='*') {
+    var dowMap=['日','一','二','三','四','五','六','日'];
+    if (dow.includes('-')) { var sp=dow.split('-'); day='每周'+dowMap[sp[0]]+'到周'+dowMap[sp[1]]; }
+    else if (dow.includes(',')) day='每周'+dow.split(',').map(function(d){return dowMap[d]}).join('、');
+    else day='每周'+dowMap[dow];
+  }
+  if (dom!=='*' && dom!==undefined) { if(dom.includes(',')) day='每月'+dom+'号'; else if(dom==='L') day='每月最后一天'; else day='每月'+dom+'号'; }
+  var result='';
+  if(when) result+=when;
+  if(day) result+=(result?'的':'')+day;
+  if(time && dom==='*' && dow==='*' && mon==='*') result=time;
+  else if(time!=='每分钟') result+=(result?' ':'')+time;
+  return result||parts.join(' ');
+}
+
+function generateNextRuns(parts) {
+  var runs=[];
+  var d=new Date(); d.setSeconds(0,0); d=new Date(d.getTime()+60000);
+  for(var count=0; count<5 && count<525600;) {
+    if(matchesField(parts[0],d.getMinutes(),0,59) && matchesField(parts[1],d.getHours(),0,23)) {
+      runs.push(d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}));
+      count++;
+    }
+    d=new Date(d.getTime()+60000);
+  }
+  return runs;
+}
+
+function matchesField(field, value, min, max) {
+  if(field==='*') return true;
+  if(field.startsWith('*/')) { var step=parseInt(field.slice(2)); return (value-min)%step===0; }
+  if(field.includes(',')) return field.split(',').map(Number).includes(value);
+  if(field.includes('-')) { var sp=field.split('-').map(Number); return value>=sp[0]&&value<=sp[1]; }
+  return parseInt(field)===value;
+}
+
+function syncFromFields() {
+  var vals=['f-min','f-hour','f-dom','f-mon','f-dow'].map(function(id){return document.getElementById(id).value});
+  document.getElementById('f-full').value=vals.join(' ');
+  evaluate(vals.join(' '));
+}
+
+function syncFromFull() {
+  var parts=document.getElementById('f-full').value.trim().split(/\s+/);
+  if(parts.length===5) {
+    ['f-min','f-hour','f-dom','f-mon','f-dow'].forEach(function(id,i){document.getElementById(id).value=parts[i]});
+    evaluate(parts.join(' '));
+  }
+}
+
+function setCron(expr) {
+  var parts=expr.split(/\s+/);
+  document.getElementById('f-full').value=expr;
+  ['f-min','f-hour','f-dom','f-mon','f-dow'].forEach(function(id,i){document.getElementById(id).value=parts[i]});
+  evaluate(expr);
+}
+
+function evaluate(expr) {
+  var el=document.getElementById('playground-result');
+  var result=parseCron(expr);
+  if(!result.ok) { el.innerHTML='<div class="result-box err">❌ '+result.error+'</div>'; return; }
+  var html='<div class="result-box ok">✅ <strong>'+result.human+'</strong></div>';
+  html+='<div class="field-explain">';
+  result.description.forEach(function(d){html+='<div>'+d+'</div>'});
+  html+='</div>';
+  if(result.nextRuns && result.nextRuns.length) {
+    html+='<div class="next-runs"><h4>📅 接下来 '+result.nextRuns.length+' 次执行时间：</h4><ul>';
+    result.nextRuns.forEach(function(r){html+='<li>'+r+'</li>'});
+    html+='</ul></div>';
+  }
+  el.innerHTML=html;
+}
+
+var quizData=[
+  {q:'每天凌晨 3 点执行',opts:['0 3 * * *','* 3 * * *','0 */3 * * *','3 0 * * *'],ans:0},
+  {q:'每 10 分钟执行一次',opts:['10 * * * *','*/10 * * * *','* 10 * * *','0/10 * * * *'],ans:1},
+  {q:'每周一早上 9 点执行',opts:['0 9 * * 1','0 9 1 * *','9 0 * * 1','0 9 * * 0'],ans:0},
+  {q:'每月 1 号和 15 号的零点执行',opts:['0 0 1,15 * *','0 0 1-15 * *','0 0 */15 * *','0 0 15 * *'],ans:0},
+  {q:'工作日（周一到周五）早 8 点半执行',opts:['30 8 * * 1-5','8 30 * * 1-5','30 8 * * 0-5','30 8 * * 1,5'],ans:0},
+  {q:'每 2 小时执行一次',opts:['0 */2 * * *','* 2 * * *','0 2 * * *','*/2 * * * *'],ans:0},
+  {q:'每年 1 月 1 日零点执行',opts:['@daily','0 0 1 1 *','0 0 1 * *','0 0 * 1 *'],ans:1},
+  {q:'每个周日的午夜执行',opts:['0 0 * * 0','0 0 * * 7','0 0 * * 1','@weekly'],ans:3},
+  {q:'每天 9 点和 18 点执行',opts:['0 9,18 * * *','0 9-18 * * *','9,18 * * * *','0 9 18 * * *'],ans:0},
+  {q:'每季度第一天零点执行',opts:['0 0 1 */3 *','0 0 1 3 *','0 0 1 3,6,9,12 *','0 0 1 * */3'],ans:2}
+];
+
+var quizIdx=0, quizScore=0;
+
+function resetQuiz() {
+  quizIdx=0; quizScore=0;
+  document.getElementById('quiz-score').style.display='none';
+  document.getElementById('quiz-content').style.display='block';
+  document.getElementById('quiz-progress').style.display='flex';
+  renderQuiz();
+}
+
+function renderQuiz() {
+  var prog=document.getElementById('quiz-progress');
+  prog.innerHTML=quizData.map(function(_,i){return '<div class="quiz-dot '+(i<quizIdx?'done':i===quizIdx?'current':'')+'"></div>'}).join('');
+  var el=document.getElementById('quiz-content');
+  var q=quizData[quizIdx];
+  var html='<div class="quiz-question">'+(quizIdx+1)+'. '+q.q+'</div><div class="quiz-options">';
+  q.opts.forEach(function(opt,i){html+='<div class="quiz-opt" onclick="answerQuiz('+i+')">'+opt+'</div>'});
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function answerQuiz(idx) {
+  var q=quizData[quizIdx];
+  var opts=document.querySelectorAll('#quiz-content .quiz-opt');
+  opts.forEach(function(opt,i){
+    opt.classList.add('disabled');
+    if(i===q.ans) opt.classList.add('correct');
+    if(i===idx && idx!==q.ans) opt.classList.add('wrong');
+  });
+  if(idx===q.ans) quizScore++;
+  setTimeout(function(){
+    quizIdx++;
+    if(quizIdx<quizData.length) renderQuiz();
+    else showScore();
+  },1000);
+}
+
+function showScore() {
+  document.getElementById('quiz-content').style.display='none';
+  document.getElementById('quiz-progress').style.display='none';
+  var el=document.getElementById('quiz-score');
+  el.style.display='block';
+  var pct=Math.round(quizScore/quizData.length*100);
+  var emoji=pct>=80?'🎉':pct>=60?'👍':'💪';
+  el.innerHTML='<div class="score">'+emoji+' '+quizScore+'/'+quizData.length+'</div>'
+    +'<p style="color:var(--muted);margin-top:12px;">正确率 '+pct+'%</p>'
+    +'<p style="color:var(--muted);font-size:14px;margin-top:8px;">'
+    +(pct>=80?'太棒了！你已经掌握 crontab 了！':pct>=60?'不错！再练习一下就好了':'继续加油！多看看语法参考')
+    +'</p>';
+}
+
+evaluate('*/5 * * * *');
+</script>
+</body>
+</html>

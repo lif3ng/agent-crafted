@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mise 中文文档</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+:root {
+  --canvas: #07080a; --surface: #0d0d0d; --surface-el: #101111; --surface-card: #121212;
+  --hairline: #242728; --hairline-soft: rgba(255,255,255,0.08); --hairline-strong: rgba(255,255,255,0.16);
+  --ink: #f4f4f6; --body: #cdcdcd; --mute: #9c9c9d; --ash: #6a6b6c; --stone: #434345;
+  --accent-blue: #57c1ff; --accent-blue-soft: rgba(87,193,255,0.15);
+  --accent-red: #ff6161; --accent-red-soft: rgba(255,97,97,0.15);
+  --accent-green: #59d499; --accent-green-soft: rgba(89,212,153,0.15);
+  --accent-yellow: #ffc533; --accent-yellow-soft: rgba(255,197,51,0.15);
+  --accent-purple: #b685f9; --accent-purple-soft: rgba(182,133,249,0.12);
+  --radius: 8px; --radius-sm: 6px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, "Noto Sans SC", sans-serif; background: var(--canvas); color: var(--ink); line-height: 1.7; font-feature-settings: "calt","kern","liga","ss03"; -webkit-font-smoothing: antialiased; }
+.layout { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+nav { width: 256px; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; padding: 24px 12px; background: var(--surface); border-right: 1px solid var(--hairline); z-index: 10; }
+nav .logo { font-size: 14px; font-weight: 600; color: var(--ink); padding: 0 12px 16px; border-bottom: 1px solid var(--hairline); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+nav .logo span { color: var(--accent-blue); }
+nav a { display: block; color: var(--mute); text-decoration: none; padding: 5px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; transition: all .15s; }
+nav a:hover { color: var(--ink); background: var(--hairline-soft); }
+nav a.active { color: var(--ink); background: var(--accent-blue-soft); }
+
+/* Main */
+main { margin-left: 256px; padding: 48px 48px 80px; flex: 1; max-width: 100%; }
+
+/* Hero */
+.hero { margin-bottom: 48px; }
+.hero h1 { font-size: 40px; font-weight: 600; line-height: 1.1; letter-spacing: -0.5px; color: var(--ink); margin-bottom: 8px; }
+.hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero .subtitle { color: var(--mute); font-size: 16px; }
+.hero .phonetic { color: var(--ash); font-size: 13px; margin-top: 4px; }
+
+/* Feature grid */
+.features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 24px 0 48px; }
+.feature { background: var(--surface-card); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 20px; transition: border-color .2s; }
+.feature:hover { border-color: var(--hairline-strong); }
+.feature .icon { font-size: 20px; margin-bottom: 8px; }
+.feature h4 { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+.feature p { font-size: 13px; color: var(--mute); line-height: 1.5; }
+
+/* Section headings */
+h2 { font-size: 22px; font-weight: 500; line-height: 1.3; letter-spacing: 0.2px; color: var(--ink); margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--hairline); }
+h3 { font-size: 16px; font-weight: 500; line-height: 1.4; color: var(--ink); margin: 28px 0 10px; }
+h4 { font-size: 14px; font-weight: 500; color: var(--mute); margin: 16px 0 8px; }
+
+/* Text */
+p { font-size: 15px; color: var(--body); margin-bottom: 12px; }
+a { color: var(--accent-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Inline code */
+code { background: var(--surface-card); padding: 2px 7px; border-radius: 4px; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; color: var(--accent-green); border: 1px solid var(--hairline); }
+
+/* Code blocks */
+pre { background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius); padding: 16px 20px; margin: 12px 0 20px; overflow-x: auto; }
+pre code { background: none; padding: 0; border: none; color: var(--body); font-size: 13px; line-height: 1.7; }
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 14px; }
+th { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--hairline-strong); color: var(--mute); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 9px 14px; border-bottom: 1px solid var(--hairline); color: var(--body); }
+tr:hover td { background: var(--hairline-soft); }
+
+/* Badges */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+.badge-green { background: var(--accent-green-soft); color: var(--accent-green); }
+.badge-orange { background: var(--accent-yellow-soft); color: var(--accent-yellow); }
+.badge-blue { background: var(--accent-blue-soft); color: var(--accent-blue); }
+.badge-purple { background: var(--accent-purple-soft); color: var(--accent-purple); }
+.badge-red { background: var(--accent-red-soft); color: var(--accent-red); }
+
+/* Callouts */
+.tip { background: var(--accent-blue-soft); border-left: 2px solid var(--accent-blue); padding: 12px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin: 12px 0; font-size: 14px; color: var(--body); }
+.tip::before { content: "💡 "; }
+.warn { background: var(--accent-yellow-soft); border-left: 2px solid var(--accent-yellow); padding: 12px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin: 12px 0; font-size: 14px; color: var(--body); }
+.warn::before { content: "⚠️ "; }
+
+/* Keyboard shortcut style */
+kbd { background: linear-gradient(180deg, var(--surface-el), var(--surface)); border: 1px solid var(--hairline-strong); border-radius: 4px; padding: 1px 6px; font-family: 'Inter', sans-serif; font-size: 12px; color: var(--ink); box-shadow: 0 1px 0 var(--hairline); }
+
+/* Footer */
+.footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--hairline); color: var(--ash); font-size: 13px; text-align: center; }
+
+/* Responsive */
+@media (max-width: 768px) { nav { display: none; } main { margin-left: 0; padding: 20px 16px; } .features { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav>
+<div class="logo">⬡ <span>mise</span> 中文文档</div>
+<a href="#intro">1. 简介</a>
+<a href="#install">2. 安装</a>
+<a href="#quickstart">3. 快速上手</a>
+<a href="#concepts">4. 核心概念</a>
+<a href="#config">5. 配置文件详解</a>
+<a href="#tools">6. 开发工具管理</a>
+<a href="#env">7. 环境变量管理</a>
+<a href="#tasks">8. 任务运行器</a>
+<a href="#backends">9. 后端系统</a>
+<a href="#commands">10. 常用命令速查</a>
+</nav>
+<main>
+
+<div class="hero">
+<h1>mise <em>中文文档</em></h1>
+<p class="subtitle">Everything in its place, before you code.</p>
+<p class="phonetic">mise-en-place /meez ahn plahs/ — 一切就位，开发前的准备工作</p>
+</div>
+
+<div class="features">
+<div class="feature"><div class="icon">🛠️</div><h4>900+ 工具</h4><p>一个 TOML 文件管理所有开发工具版本</p></div>
+<div class="feature"><div class="icon">🌍</div><h4>自动切换</h4><p>按目录自动加载对应的工具和环境变量</p></div>
+<div class="feature"><div class="icon">📋</div><h4>任务运行</h4><p>定义构建、测试、部署任务，并行执行</p></div>
+<div class="feature"><div class="icon">🔒</div><h4>安全可靠</h4><p>配置文件信任机制，敏感变量脱敏</p></div>
+</div>
+
+<h2 id="intro">1. 简介</h2>
+<p><strong>mise</strong> 是一个 polyglot 工具版本管理器，用于管理开发环境的运行时和工具。它取代了 <code>asdf</code>，提供更快的性能和更丰富的功能。</p>
+<p>核心能力：在一个 <code>mise.toml</code> 文件中声明项目所需的所有工具版本、环境变量和任务，进入目录时自动激活，离开时自动恢复。</p>
+
+<h2 id="install">2. 安装</h2>
+<h3>一键安装</h3>
+<pre><code>curl https://mise.run | sh</code></pre>
+<p>默认安装到 <code>~/.local/bin</code></p>
+
+<h3>验证安装</h3>
+<pre><code>mise --version
+mise doctor    # 诊断检查</code></pre>
+
+<h3>其他安装方式</h3>
+<table>
+<tr><th>方式</th><th>命令</th></tr>
+<tr><td>macOS</td><td><code>brew install mise</code></td></tr>
+<tr><td>Ubuntu/Debian</td><td><code>apt install mise</code></td></tr>
+<tr><td>Nix</td><td><code>nix-env -iA nixpkgs.mise</code></td></tr>
+</table>
+
+<h2 id="quickstart">3. 快速上手</h2>
+
+<h3>步骤一：激活 mise</h3>
+<pre><code># Bash
+echo 'eval "$(~/.local/bin/mise activate bash)"' >> ~/.bashrc
+
+# Zsh
+echo 'eval "$(~/.local/bin/mise activate zsh)"' >> ~/.zshrc</code></pre>
+<p>重启 shell 后运行 <code>mise doctor</code> 验证。</p>
+
+<h3>步骤二：安装工具</h3>
+<pre><code>mise use node@24 python@3.12 terraform@1
+mise install</code></pre>
+
+<h3>步骤三：设置环境变量</h3>
+<pre><code># mise.toml
+[env]
+NODE_ENV = "production"
+DATABASE_URL = "postgres://localhost/orders"</code></pre>
+
+<h3>步骤四：定义任务</h3>
+<pre><code># mise.toml
+[tasks.hello]
+run = "echo hello from mise"
+
+[tasks.test]
+run = "pytest"</code></pre>
+<pre><code>mise run hello    # hello from mise
+mise run test     # 运行 pytest</code></pre>
+
+<h2 id="concepts">4. 核心概念</h2>
+
+<h3>配置层级</h3>
+<p>mise 使用分层配置，从全局到局部逐级覆盖：</p>
+<table>
+<tr><th>路径</th><th>说明</th><th>优先级</th></tr>
+<tr><td><code>/etc/mise/config.toml</code></td><td>系统级</td><td><span class="badge badge-red">最高</span></td></tr>
+<tr><td><code>~/.config/mise/config.toml</code></td><td>用户全局</td><td></td></tr>
+<tr><td><code>~/work/mise.toml</code></td><td>工作目录</td><td></td></tr>
+<tr><td><code>~/work/project/mise.toml</code></td><td>项目配置</td><td></td></tr>
+<tr><td><code>~/work/project/mise.local.toml</code></td><td>本地覆盖（不入 Git）</td><td><span class="badge badge-green">最低</span></td></tr>
+</table>
+
+<div class="tip">合并规则：工具和环境变量是叠加覆盖；任务是完全替换。</div>
+
+<h3>信任机制</h3>
+<pre><code>mise trust    # 信任当前目录配置
+mise settings trusted_config_paths=["/"]  # 全局禁用提示</code></pre>
+
+<h3>激活方式</h3>
+<table>
+<tr><th>方式</th><th>说明</th><th>适用</th></tr>
+<tr><td><code>mise activate</code></td><td>Hook 进 shell，自动切换</td><td>交互式（推荐）</td></tr>
+<tr><td>Shims</td><td>符号链接拦截命令</td><td>CI/CD、IDE</td></tr>
+<tr><td><code>mise exec</code></td><td>按需使用</td><td>临时命令</td></tr>
+</table>
+
+<h2 id="config">5. 配置文件详解</h2>
+
+<h3>完整示例</h3>
+<pre><code># 最低 mise 版本要求
+min_version = '2024.11.1'
+
+[tools]
+node = '24'
+python = '3.12'
+ruby = 'latest'
+terraform = { version = "1", postinstall = "terraform -install-autocomplete" }
+
+[env]
+NODE_ENV = 'development'
+API_URL = 'http://localhost:3000'
+
+[tasks.dev]
+description = "启动开发服务器"
+run = 'npm run dev'
+
+[tasks.test]
+description = "运行测试"
+run = 'pytest'
+depends = ["lint"]
+
+[shell_alias]
+ll = "ls -la"
+gs = "git status"</code></pre>
+
+<h3>版本范围语法</h3>
+<table>
+<tr><th>语法</th><th>说明</th></tr>
+<tr><td><code>node@24</code></td><td>主版本 24 的最新版</td></tr>
+<tr><td><code>node@24.1</code></td><td>24.1.x 最新版</td></tr>
+<tr><td><code>node@24.1.0</code></td><td>精确版本</td></tr>
+<tr><td><code>node@latest</code></td><td>最新版本</td></tr>
+<tr><td><code>node@lts</code></td><td>LTS 版本</td></tr>
+<tr><td><code>ref:master</code></td><td>从 Git ref 编译</td></tr>
+</table>
+
+<h2 id="tools">6. 开发工具管理</h2>
+
+<h3>常用命令</h3>
+<pre><code>mise use node@24              # 安装并写入配置
+mise use --global node@24     # 写入全局配置
+mise install node@24          # 仅安装
+mise exec node@24 -- node -v  # 一次性执行
+mise x python@3 -- python     # 同上（简写）
+mise ls                       # 列出所有工具
+mise ls --current             # 列出当前生效版本
+mise uninstall node@24        # 卸载</code></pre>
+
+<h3>按操作系统限制</h3>
+<pre><code>[tools]
+ripgrep = { version = "latest", os = ["linux", "macos"] }
+hk = { version = "latest", os = ["linux", "macos/arm64"] }</code></pre>
+
+<h3>工具依赖 & 安装后命令</h3>
+<pre><code>[tools]
+python = "3.12"
+"pipx:ruff" = { version = "latest", depends = ["python"] }
+node = { version = "22", postinstall = "corepack enable" }</code></pre>
+
+<h2 id="env">7. 环境变量管理</h2>
+
+<h3>基本用法</h3>
+<pre><code>[env]
+NODE_ENV = "production"
+DATABASE_URL = "postgres://localhost/mydb"
+DEBUG = false    # 清除变量</code></pre>
+
+<h3>CLI 操作</h3>
+<pre><code>mise set NODE_ENV=development
+mise set          # 查看所有
+mise unset NODE_ENV</code></pre>
+
+<h3>从文件加载</h3>
+<pre><code>[env]
+_.file = '.env'
+_.file = '.env.yaml'            # 支持 YAML/JSON
+_.file = ['.env', '.env.local'] # 多文件
+_.file = { path = ".secrets", redact = true }</code></pre>
+
+<h3>PATH 管理</h3>
+<pre><code>[env]
+_.path = './bin'
+_.path = ['~/.local/bin', './node_modules/.bin']</code></pre>
+
+<h3>模板 & 必填 & 脱敏</h3>
+<pre><code>[env]
+MY_PROJ_LIB = "{{config_root}}/lib"
+LD_LIBRARY_PATH = "/some/path:{{env.MY_PROJ_LIB}}"
+
+DATABASE_URL = { required = "设置数据库连接字符串" }
+SECRET = { value = "my_secret", redact = true }
+
+# 批量脱敏
+redactions = ["SECRET_*", "*_TOKEN"]</code></pre>
+
+<h2 id="tasks">8. 任务运行器</h2>
+
+<h3>TOML 任务</h3>
+<pre><code>[tasks.build]
+description = "构建项目"
+run = "cargo build"
+
+[tasks.test]
+description = "运行所有测试"
+run = "pytest"
+depends = ["lint"]
+
+[tasks.deploy]
+description = "部署到生产"
+run = "kubectl apply -f k8s/"
+depends = ["build", "test"]</code></pre>
+<pre><code>mise run build
+mise run test
+mise run deploy</code></pre>
+
+<h3>文件任务</h3>
+<p>创建 <code>mise-tasks/build</code>：</p>
+<pre><code>#!/usr/bin/env bash
+#MISE description="Build the CLI"
+cargo build</code></pre>
+
+<h3>任务环境变量</h3>
+<table>
+<tr><th>变量</th><th>说明</th></tr>
+<tr><td><code>MISE_ORIGINAL_CWD</code></td><td>运行时工作目录</td></tr>
+<tr><td><code>MISE_CONFIG_ROOT</code></td><td>配置文件目录</td></tr>
+<tr><td><code>MISE_PROJECT_ROOT</code></td><td>项目根目录</td></tr>
+<tr><td><code>MISE_TASK_NAME</code></td><td>任务名</td></tr>
+</table>
+
+<h2 id="backends">9. 后端系统</h2>
+
+<table>
+<tr><th>后端</th><th>说明</th><th>示例</th></tr>
+<tr><td><span class="badge badge-green">core</span></td><td>内置主流语言</td><td><code>node</code>, <code>python</code>, <code>ruby</code></td></tr>
+<tr><td><span class="badge badge-blue">npm</span></td><td>npm 包</td><td><code>npm:@anthropic-ai/claude-code</code></td></tr>
+<tr><td><span class="badge badge-blue">pipx</span></td><td>Python pipx</td><td><code>pipx:black</code></td></tr>
+<tr><td><span class="badge badge-blue">cargo</span></td><td>Rust cargo</td><td><code>cargo:ripgrep</code></td></tr>
+<tr><td><span class="badge badge-blue">go</span></td><td>Go 模块</td><td><code>go:golang.org/x/tools/...</code></td></tr>
+<tr><td><span class="badge badge-blue">gem</span></td><td>Ruby gem</td><td><code>gem:rails</code></td></tr>
+<tr><td><span class="badge badge-orange">github</span></td><td>GitHub Releases</td><td><code>github:BurntSushi/ripgrep</code></td></tr>
+<tr><td><span class="badge badge-orange">asdf</span></td><td>asdf 插件</td><td><code>asdf:erlang</code></td></tr>
+<tr><td><span class="badge badge-orange">aqua</span></td><td>Aqua 生态</td><td><code>aqua:cli/cli</code></td></tr>
+<tr><td><span class="badge badge-orange">ubi</span></td><td>Universal Binary</td><td><code>ubi:BurntSushi/ripgrep</code></td></tr>
+<tr><td><span class="badge badge-orange">http</span></td><td>HTTP 下载</td><td><code>http:example.com/tool.tar.gz</code></td></tr>
+<tr><td><span class="badge badge-orange">vfox</span></td><td>vfox 插件</td><td><code>vfox:nodejs</code></td></tr>
+</table>
+
+<h2 id="commands">10. 常用命令速查</h2>
+
+<pre><code># === 安装与配置 ===
+mise install                    # 安装配置中所有工具
+mise use &lt;tool&gt;@&lt;ver&gt;          # 安装并写入配置
+mise use -g &lt;tool&gt;@&lt;ver&gt;      # 全局安装
+mise uninstall &lt;tool&gt;@&lt;ver&gt;   # 卸载
+mise ls / mise ls --current    # 列出工具
+mise doctor                     # 诊断检查
+mise trust                      # 信任配置
+
+# === 执行与运行 ===
+mise exec &lt;tool&gt;@&lt;v&gt; -- &lt;cmd&gt; # 指定工具执行
+mise x &lt;tool&gt;@&lt;v&gt; -- &lt;cmd&gt;   # 同上简写
+mise run &lt;task&gt;                # 运行任务
+mise tasks ls                   # 列出任务
+
+# === 环境变量 ===
+mise set KEY=VALUE              # 设置
+mise set                        # 查看
+mise unset KEY                  # 删除
+mise env / mise env --json      # 导出
+
+# === 其他 ===
+mise config                     # 配置加载顺序
+mise settings                   # 查看设置
+mise activate &lt;shell&gt;          # 激活脚本</code></pre>
+
+<div class="footer">
+<p>基于 mise 官方文档 <a href="https://mise.en.dev/">mise.en.dev</a> 整理 · 2026-04-28</p>
+</div>
+
+</main>
+</div>
+</body>
+</html>

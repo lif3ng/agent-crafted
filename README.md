@@ -18,6 +18,7 @@
 |------|------|------|------|
 | [Tailscale 完全速查手册](tailscale/) | VPN 组网工具全覆盖：日常命令、端口暴露、网络排查、进阶配置 | 🟢 网络 | `tailscale/` |
 | [Crontab 交互式学习手册](crontab/) | Cron 定时任务完全指南：语法解析、交互式练习、常用示例、在线调试 | 🟡 运维 | `crontab/` |
+| [mise 中文速查手册](mise/) | 开发工具版本管理：多语言运行时、环境变量、任务运行器、配置层级 | 🔵 开发工具 | `mise/` |
 
 ## 🏗️ 仓库结构
 
@@ -38,6 +39,8 @@ agent-crafted/
 │       └── ...
 │
 ├── crontab/            ← Crontab 交互式学习手册
+│   └── index.html
+├── mise/               ← mise 中文速查手册
 │   └── index.html
 └── {topic}/               ← 未来新增的手册
     ├── index.html
